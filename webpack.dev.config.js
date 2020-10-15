@@ -24,11 +24,15 @@ module.exports = {
 					{ loader: 'file-loader?name=font/[name]__[hash:base64:5].[ext]' },
 				],
 			},
+			{
+				test: /\.(sa|sc|c)ss$/,
+				use: ["style-loader", "css-loader", "sass-loader"]
+			}
 		],
 	},
 	target: 'electron-renderer',
 	plugins: [
-		new HtmlWebpackPlugin({ title: 'React Electron App' }),
+		new HtmlWebpackPlugin({ title: 'Soundator' }),
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify('development'),
 		}),
