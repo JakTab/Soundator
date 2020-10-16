@@ -3,7 +3,7 @@ import img from '../../assets/cover.jpg';
 
 import './RightColView.scss';
 
-import { currentSong, calcTime, calcProgressBar } from './App';
+import { calcTime, calcProgressBar } from './App';
 import { musicList } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
@@ -12,7 +12,15 @@ var audio = new Audio();
 audio.volume = 1;
 var lastSavedVolume = audio.volume;
 
-export function playMusicItem(path, imageUrl, index) {
+var currentSong = {
+	"index": "",
+	"title": "",
+	"artist": "",
+	"album": "",
+	"artwork": ""
+};
+
+export function playMusicItem(path, imageUrl, index, songData) {
   audio.pause();
   // this.setState({ isPlaying: false });
   audio.src = path;
@@ -23,10 +31,15 @@ export function playMusicItem(path, imageUrl, index) {
 
   currentSong.index = index;
   currentSong.artwork = imageUrl;
-  // currentSong.title = songData.title;
-  // currentSong.artist = songData.artist[0];
-  // currentSong.album = songData.album;
+  currentSong.title = songData.title;
+  currentSong.artist = songData.artist[0];
+  currentSong.album = songData.album;
 
+  document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
+  document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
+  document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
+  document.getElementsByClassName("song-number")[0].innerHTML = songData.track.no + "/" + songData.track.of;
+  
   audio.ontimeupdate = () => {
     document.getElementById("currentSongTime").innerHTML = calcTime(audio.currentTime);
     document.getElementById("fill").style.width = calcProgressBar(audio);
@@ -38,7 +51,10 @@ export function playMusicItem(path, imageUrl, index) {
     if (index != musicList.length-1 && index > -1) {
       playMusicItem(musicList[index+1], audio.src, index+1);
     } else {
+      //Check if the track is not supported; if so - skip
       audio.pause();
+      audio.src = path;
+      audio.currentTime = 0;
       // this.setState({ isPlaying: false });
     }
   }
@@ -150,9 +166,9 @@ class RightColView extends Component {
                   </div>    
               </div>
               <div className="currently-playing">
-                  <h2 className="song-name">{currentSong.title}</h2>
-                  <h3 className="artist-name">{currentSong.artist}</h3>
-                  <h3 className="album-name">{currentSong.album}</h3>
+                  <h2 className="song-name"></h2>
+                  <h3 className="artist-name"></h3>
+                  <h3 className="album-name"></h3>
               </div>
               <div className="controls">
                   <div className="option"><FontAwesomeIcon icon={faBars} /></div>
@@ -169,7 +185,7 @@ class RightColView extends Component {
                   </div> 
               </div>
               <div className="currently-playing">
-                    <h3 className="song-number">{currentSong.index}</h3>
+                    <h3 className="song-number"></h3>
                 </div>
           </div>
       </div>

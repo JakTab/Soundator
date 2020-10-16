@@ -104,7 +104,7 @@ $font: 'Questrial', sans-serif;
   margin-top: 5px;
 }
 
-.album-name {
+.album-name, .song-number {
   font-size: .5em;
   letter-spacing: 1.5px;
   color: lighten($dark, 15%);
