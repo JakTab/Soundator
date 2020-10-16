@@ -20,9 +20,8 @@ async function getAllFolders() {
 }
 
 async function goToFolder(mainFolder) {
-    console.log(musicList);
 	musicList = [];
-	document.getElementById("listView").innerHTML = "";
+	document.getElementById("list").innerHTML = "";
 	await getItemsToMusicList(mainFolder, -1);
 
 	musicList.forEach((musicListItem, index) => {
@@ -34,9 +33,9 @@ async function goToFolder(mainFolder) {
 
 	musicList.forEach((musicAlbumItem, index) => {
 		if (!Array.isArray(musicAlbumItem)) {
-			addToPlaylistAsSong(musicAlbumItem);
+            addToPlaylistAsSong(musicAlbumItem);
 		} else {
-			addToPlaylistAsAlbum(musicAlbumItem, index);
+            createListItem(false, false, musicAlbumItem, index);
 		}
 	})
 }
@@ -67,8 +66,7 @@ async function addToPlaylistAsSong(musicAlbumSong) {
 	var readableStream = fs.createReadStream(musicAlbumSong);
 	await mm(readableStream, async function (err, metadata) {
 		if (err) throw err;
-		console.log(metadata);
-		createItem(metadata, path);
+        createListItem(metadata, path, false, false);
 		readableStream.close();
 	});
 }
@@ -79,74 +77,96 @@ function Uint8ArrayToJpgURL(arrayData) {
     return URL.createObjectURL(blob);
 }
 
-function createItem(songData, path) {
-	var imageUrl = Uint8ArrayToJpgURL(songData.picture[0].data);
-	console.log(imageUrl)
-	let musicAlbumItem = document.createElement("div");
-	musicAlbumItem.id = "musicAlbumItem";
-	musicAlbumItem.style.order = songData.track.no;
-	musicAlbumItem.onclick = () => {
-		playMusicItem(path, imageUrl, songData.track.no-1);
-	}
+function createListItem(songData, path, musicAlbumArray, index) {
+    let imageUrl = "", artistSong = "", artistName = "", artistAlbum = "", order = "",
+        title = "", cutStr = "";
 
-	let albumCoverItem = document.createElement("div");
-	albumCoverItem.id = "albumCoverItem";
-	let songCover = document.createElement("img");
-	songCover.src = imageUrl;
-	albumCoverItem.appendChild(songCover);
+    //listItem
+    let musicAlbumItem = document.createElement("div");
+    musicAlbumItem.id = "listItem";
 
-	let albumArtist = document.createElement("p");
-	albumArtist.innerHTML = songData.artist[0];
-	let albumName = document.createElement("p");
-	albumName.innerHTML = songData.album;
-	let songName = document.createElement("p");
-	songName.innerHTML = songData.track.no + ". " + songData.title;
+    if (songData != false) {
+        //Song
+        imageUrl = Uint8ArrayToJpgURL(songData.picture[0].data);
+        order = songData.track.no-1;
+        musicAlbumItem.onclick = () => {
+            playMusicItem(path, imageUrl, order, songData);
+        }
+        artistSong = songData.track.no + ". " + songData.title;
+        artistAlbum = songData.artist[0];
+        artistName = songData.album;
+    } else if (index > -1) {
+        //Folder
+        console.log(index);
+        console.log("! " + musicAlbumArray[0].split('/').pop());
+        title = musicAlbumArray[0].split('/').pop();
+        console.log(title);
+        cutStr = title.indexOf(" - ");
+        artistName = title.substring(0, cutStr);
+        artistAlbum = title.substring(cutStr+2, title.length);
+        order = index;
+        musicAlbumItem.onclick = () => {
+            goToFolder(musicAlbumArray[0]);
+        }
+    }
+
+    musicAlbumItem.style.order = order;
+
+    //listItemIng
+    let albumCoverItem = document.createElement("div");
+    albumCoverItem.id = "listItemImg";
+
+    if (imageUrl != "") {
+        let albumCoverImg = document.createElement("img");
+        albumCoverImg.src = imageUrl;
+        albumCoverItem.appendChild(albumCoverImg);
+    }
+
+    //listItemInfo
+    let listItemInfo = document.createElement("div");
+    listItemInfo.className = "listItemInfo";
+
+    var albumSong = "", albumArtist = "", albumName = "";
+
+    console.log(artistSong);
+
+    if (artistSong != "" && artistSong != undefined) {
+        //Song
+        albumSong = document.createElement("h2");
+        albumSong.className = "listItem-song-name";
+        albumSong.innerHTML = artistSong;
+        listItemInfo.appendChild(albumSong);
+    } 
+
+    if (artistSong == "") {
+        //Folder
+        albumArtist = document.createElement("h2");
+        albumArtist.className = "listItem-song-name";
+    } else {
+        //Song
+        albumArtist = document.createElement("h3");
+        albumArtist.className = "listItem-artist-name";
+
+    }
+    albumArtist.innerHTML = artistName;
+    listItemInfo.appendChild(albumArtist);
+
+    albumName = document.createElement("h3");
+    albumName.className = "listItem-album-name";
+    albumName.innerHTML = artistAlbum;
+    listItemInfo.appendChild(albumName);
 
 	musicAlbumItem.appendChild(albumCoverItem);
-	musicAlbumItem.appendChild(albumArtist);
-	musicAlbumItem.appendChild(albumName);
-	musicAlbumItem.appendChild(songName);
-	document.getElementById("listView").appendChild(musicAlbumItem);
-}
-
-async function addToPlaylistAsAlbum(musicAlbumArray, index) {
-	let title = musicAlbumArray[0].split('/').pop();
-	let cutStr = title.indexOf(" - ");
-	let artistName = title.substring(0, cutStr);
-	let artistAlbum = title.substring(cutStr+2, title.length);
-	
-	let musicAlbumItem = document.createElement("div");
-	musicAlbumItem.id = "musicAlbumItem";
-	musicAlbumItem.onclick = () => {
-		goToFolder(musicAlbumArray[0])
-	}
-	let albumCoverItem = document.createElement("div");
-	albumCoverItem.id = "albumCoverItem";
-	let albumArtist = document.createElement("p");
-	albumArtist.innerHTML = artistName;
-	let albumName = document.createElement("p");
-	albumName.innerHTML = artistAlbum;
-
-	musicAlbumItem.appendChild(albumCoverItem);
-	musicAlbumItem.appendChild(albumArtist);
-	musicAlbumItem.appendChild(albumName);
-	document.getElementById("listView").appendChild(musicAlbumItem);
+    musicAlbumItem.appendChild(listItemInfo);
+    
+	document.getElementById("list").appendChild(musicAlbumItem);
 }
 
 const LeftColView = () => {
     return (
         <div id="leftColView">
-			<div id="searchView" onClick={() => getAllFolders()}></div>
-			<div id="listView">
-                <div id="musicAlbumItem" style={{order: 1}}>
-                    <div id="albumCoverItem">
-                        <img src={img} />
-                    </div>
-                    <p>Deafear</p>
-                    <p>The Waiting</p>
-                    <p>1. Grey World</p>
-                </div>
-            </div>
+			<div id="search" onClick={() => getAllFolders()}></div>
+			<div id="list"></div>
 		</div>
     )
 }
