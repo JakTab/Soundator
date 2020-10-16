@@ -3,14 +3,14 @@ import img from '../../assets/cover.jpg';
 
 import './RightColView.scss';
 
-import { currentSong, musicList, calcTime, calcProgressBar } from './App';
+import { currentSong, calcTime, calcProgressBar } from './App';
+import { musicList } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
 
 var audio = new Audio(); 
 audio.volume = 1;
 var lastSavedVolume = audio.volume;
-
 
 export function playMusicItem(path, imageUrl, index) {
   audio.pause();

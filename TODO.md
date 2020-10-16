@@ -1,17 +1,19 @@
 # TODO LIST
 
-* Push functions from App to LeftColView
+- [x] Push functions from App to LeftColView
 
-* Change design for LeftColView to match RightColView
+- [] Change design for LeftColView to match RightColView
 
-* Song values added to currently-playing: song-name, artist-name, album-name, song-number (x out of y)
+- [] Block time scroll when no song is in the player
 
-* Proper file filtering (get all music files and folders, remove all else)
+- [] Song values added to currently-playing: song-name, artist-name, album-name, song-number (x out of y)
 
-* Catch isPlaying for RightColView when choosing song in LeftColView
+- [] Proper file filtering (get all music files and folders, remove all else)
 
-* Code refactor #1 - RightColView + project upkeep
+- [] Catch isPlaying for RightColView when choosing song in LeftColView
 
-* On app load check the existance of a last opened folder / saved Music folder
+- [] Code refactor #1 - RightColView + project upkeep
 
-* Creating/opening/removing playlists
+- [] On app load check the existance of a last opened folder / saved Music folder
+
+- [] Creating/opening/removing playlists
