@@ -1,3 +1,9 @@
+$primary: #49654D;
+$secondary: #8BA989;
+$white: #FFFFFF;
+$light: #C0CFB2;
+$dark: #364F3C;
+
 * {
 	box-sizing: border-box;
 }
@@ -21,4 +27,24 @@ body, html {
 	flex-wrap: nowrap;
 	align-items: stretch;
 	background-color: black;
+}
+
+/* Scrollbar - width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Scrollbar - track */
+::-webkit-scrollbar-track {
+  background: $light; 
+}
+ 
+/* Scrollbar - handle */
+::-webkit-scrollbar-thumb {
+  background: $secondary; 
+}
+
+/* Scrollbar - handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $primary;
 }
