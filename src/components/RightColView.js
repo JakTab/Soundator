@@ -4,13 +4,14 @@ import img from '../../assets/cover.jpg';
 import './RightColView.scss';
 
 import { calcTime, calcProgressBar } from './App';
-import { musicList } from './LeftColView';
+import { musicList, songMetadata } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
 
-var audio = new Audio(); 
+var audio = new Audio();
 audio.volume = 1;
 var lastSavedVolume = audio.volume;
+var currentSongData = "";
 
 var currentSong = {
 	"index": "",
@@ -31,6 +32,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
 
   currentSong.index = index;
   currentSong.artwork = imageUrl;
+
   currentSong.title = songData.title;
   currentSong.artist = songData.artist[0];
   currentSong.album = songData.album;
@@ -48,12 +50,10 @@ export function playMusicItem(path, imageUrl, index, songData) {
     document.getElementById("currentSongDuration").innerHTML = calcTime(audio.duration);
   };
   audio.onended = () => {
-    if (index != musicList.length-1 && index > -1) {
-      playMusicItem(musicList[index+1], audio.src, index+1);
+    if (index != musicList.length-1) {
+      playMusicItem(musicList[index+1], audio.src, index+1, songMetadata[index+1]);
     } else {
-      //Check if the track is not supported; if so - skip
       audio.pause();
-      audio.src = path;
       audio.currentTime = 0;
       // this.setState({ isPlaying: false });
     }
@@ -90,25 +90,28 @@ class RightColView extends Component {
   
   backButton(currentSongIndex) {
     if (currentSongIndex > 0) {
-      playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1);
+      playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1, songMetadata[currentSongIndex-1]);
     }
   }
   
   forwardButton(currentSongIndex) {
     if (currentSongIndex < musicList.length-1) {
-      playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1);
+      playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1, songMetadata[currentSongIndex+1]);
     }
   }
   
   jumpToSongTime(event) {
-    var rect =  document.getElementById("divFill").getBoundingClientRect();
-    var startX = rect.x;
-    var endX = startX + rect.width;
-    var clickedX = event.clientX;
-  
-    var calculate = ((clickedX-startX)/(endX-startX))*100;
-    document.getElementById("fill").style.width = calculate + "%";
-    audio.currentTime = audio.duration * (calculate/100);
+    console.log(audio.src);
+    if (audio.src != "") {
+      var rect =  document.getElementById("divFill").getBoundingClientRect();
+      var startX = rect.x;
+      var endX = startX + rect.width;
+      var clickedX = event.clientX;
+    
+      var calculate = ((clickedX-startX)/(endX-startX))*100;
+      document.getElementById("fill").style.width = calculate + "%";
+      audio.currentTime = audio.duration * (calculate/100);
+    }
   }
 
   changeSongVolume(event) {

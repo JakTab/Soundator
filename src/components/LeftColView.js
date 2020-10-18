@@ -4,11 +4,10 @@ import mm from 'musicmetadata';
 
 import './LeftColView.scss';
 
-import img from '../../assets/cover.jpg';
-
 import { playMusicItem } from './RightColView';
 
 export var musicList = [];
+export var songMetadata = [];
 var musicArray = [];
 
 const remote = require('electron').remote;
@@ -20,7 +19,9 @@ async function getAllFolders() {
 }
 
 async function goToFolder(mainFolder) {
-	musicList = [];
+    musicList = [];
+    songMetadata = [];
+
 	document.getElementById("list").innerHTML = "";
 	await getItemsToMusicList(mainFolder, -1);
 
@@ -29,11 +30,16 @@ async function goToFolder(mainFolder) {
 		if (title != "txt" && title != "mp3" && title != "jpg" && title != "png" && title != "flac") {
 			getItemsToMusicList(musicListItem, index);
 		}
-	});
+    });
 
 	musicList.forEach((musicAlbumItem, index) => {
 		if (!Array.isArray(musicAlbumItem)) {
-            addToPlaylistAsSong(musicAlbumItem);
+            var title = musicAlbumItem.split('.').pop();
+            if (title != "jpg" && title != "png") {
+                addToPlaylistAsSong(musicAlbumItem);
+            } else {
+                musicList.splice(index, 1);
+            }
 		} else {
             createListItem(false, false, musicAlbumItem, index);
 		}
@@ -65,7 +71,8 @@ async function addToPlaylistAsSong(musicAlbumSong) {
 	var path = musicAlbumSong;
 	var readableStream = fs.createReadStream(musicAlbumSong);
 	await mm(readableStream, async function (err, metadata) {
-		if (err) throw err;
+        if (err) throw err;
+        songMetadata.push(metadata);
         createListItem(metadata, path, false, false);
 		readableStream.close();
 	});
