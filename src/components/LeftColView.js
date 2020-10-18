@@ -46,7 +46,11 @@ async function goToFolder(mainFolder) {
 		} else {
             createListItem(false, false, musicAlbumItem, index);
 		}
-	})
+    });
+
+    if (songMetadata[0] === undefined) {
+        songMetadata.splice(0, 1);
+    }
 }
 
 async function getItemsToMusicList(folder, index) {
@@ -78,7 +82,7 @@ async function addToPlaylistAsSong(musicAlbumSong) {
 	var readableStream = fs.createReadStream(musicAlbumSong);
 	await mm(readableStream, async function (err, metadata) {
         if (err) throw err;
-        songMetadata.push(metadata);
+        songMetadata[metadata.track.no] = metadata;
         createListItem(metadata, path, false, false);
 		readableStream.close();
 	});

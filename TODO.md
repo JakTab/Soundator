@@ -22,6 +22,8 @@
 
 - [ ] Code refactor #1 - RightColView + project upkeep
 
+- [x] Back/forward - make tracks go in order between each other
+
 - [ ] Catch isPlaying for RightColView when choosing song in LeftColView
 
 - [ ] Proper file filtering (get all music files and folders, remove all else)
@@ -29,3 +31,5 @@
 - [ ] On app load check the existance of a last opened folder / saved Music folder
 
 - [ ] Creating/opening/removing playlists
+
+- [x] RightColView - controls collapse & toggle
