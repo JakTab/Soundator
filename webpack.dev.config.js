@@ -7,10 +7,6 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.css$/,
-				use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
-			},
-			{
 				test: /\.jsx?$/,
 				use: [{ loader: 'babel-loader', query: { compact: false } }],
 			},

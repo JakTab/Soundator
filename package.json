@@ -1,7 +1,7 @@
 {
   "name": "simple-music-player",
   "productName": "Simple Music Player",
-  "version": "0.0.01",
+  "version": "0.0.02",
   "description": "Simple Music Player Description",
   "engines": {
     "node": ">=9.0.0",

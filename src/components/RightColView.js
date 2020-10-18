@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import img from '../../assets/cover.jpg';
 
 import './RightColView.scss';
 
-import { calcTime, calcProgressBar } from './App';
+import * as calcFunctions from '../utils/calcFunctions';
 import { musicList, songMetadata } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +10,6 @@ import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@for
 var audio = new Audio();
 audio.volume = 1;
 var lastSavedVolume = audio.volume;
-var currentSongData = "";
 
 var currentSong = {
 	"index": "",
@@ -22,6 +20,7 @@ var currentSong = {
 };
 
 export function playMusicItem(path, imageUrl, index, songData) {
+  console.log(songData);
   audio.pause();
   // this.setState({ isPlaying: false });
   audio.src = path;
@@ -43,12 +42,14 @@ export function playMusicItem(path, imageUrl, index, songData) {
   document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songMetadata.length;
   
   audio.ontimeupdate = () => {
-    document.getElementById("currentSongTime").innerHTML = calcTime(audio.currentTime);
-    document.getElementById("fill").style.width = calcProgressBar(audio);
+    document.getElementById("currentSongTime").innerHTML = calcFunctions.calcTime(audio.currentTime);
+    document.getElementById("timeFill").style.width = calcFunctions.calcProgressBar(audio);
   }
-  audio.onloadedmetadata = function() {
-    document.getElementById("currentSongDuration").innerHTML = calcTime(audio.duration);
-  };
+
+  audio.onloadedmetadata = () => {
+    document.getElementById("currentSongDuration").innerHTML = calcFunctions.calcTime(audio.duration);
+  }
+
   audio.onended = () => {
     if (index != musicList.length-1) {
       playMusicItem(musicList[index+1], audio.src, index+1, songMetadata[index+1]);
@@ -58,17 +59,12 @@ export function playMusicItem(path, imageUrl, index, songData) {
       // this.setState({ isPlaying: false });
     }
   }
+
   console.log("Now playing: " + audio.src);
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
   audio.play();
   // this.setState({ isPlaying: true });
 }
-
-function toggleLeftColView() {
-  document.getElementById("leftColView").classList.toggle("showLeftCol");
-  document.getElementById("rightColView").classList.toggle("decreaseRightCol");
-}
-
 class RightColView extends Component {
   constructor(props) {
     super(props);
@@ -80,7 +76,7 @@ class RightColView extends Component {
   }
 
   componentDidMount() {
-    document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
+    this.volumeFillChange(audio.volume);
   }
 
   async playButton() {
@@ -94,47 +90,35 @@ class RightColView extends Component {
   }
   
   backButton(currentSongIndex) {
+    console.log(currentSongIndex);
+    console.log(songMetadata);
     if (currentSongIndex > 0) {
       playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1, songMetadata[currentSongIndex-1]);
     }
   }
   
   forwardButton(currentSongIndex) {
+    console.log(songMetadata);
     if (currentSongIndex < musicList.length-1) {
       playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1, songMetadata[currentSongIndex+1]);
     }
   }
   
   jumpToSongTime(event) {
-    console.log(audio.src);
     if (audio.src != "") {
-      var rect =  document.getElementById("divFill").getBoundingClientRect();
-      var startX = rect.x;
-      var endX = startX + rect.width;
-      var clickedX = event.clientX;
-    
-      var calculate = ((clickedX-startX)/(endX-startX))*100;
-      document.getElementById("fill").style.width = calculate + "%";
+      var calculate = calcFunctions.calcDivFillPercentage(event, "TimeFill");
+      this.timeFillChange(calculate);
       audio.currentTime = audio.duration * (calculate/100);
     }
   }
 
   changeSongVolume(event) {
-    var rect =  document.getElementById("divVolumeFill").getBoundingClientRect();
-    var startX = rect.x;
-    var endX = startX + rect.width;
-    var clickedX = event.clientX;
-  
-    var calculate = ((clickedX-startX)/(endX-startX))*100;
-    document.getElementById("volumeFill").style.width = calculate + "%";
+    var calculate = calcFunctions.calcDivFillPercentage(event, "VolumeFill");
+    this.volumeFillChange(calculate/100);
     audio.volume = calculate/100;
-    lastSavedVolume = audio.volume;
-    console.log(audio.volume);
   }
 
   changeSongVolumeByBit(event) {
-    event.persist();
-    console.log(event);
     var volumeChange = 0;
     if (event.deltaY < 0) {
       //up
@@ -146,9 +130,7 @@ class RightColView extends Component {
       if (volumeChange < 0) volumeChange = 0;
     }
     audio.volume = volumeChange;
-    lastSavedVolume = audio.volume;
-    document.getElementById("volumeFill").style.width = audio.volume*100 + "%";
-    console.log(audio.volume)
+    this.volumeFillChange(audio.volume);
   }
 
   muteUnmuteButton() {
@@ -157,20 +139,34 @@ class RightColView extends Component {
     } else {
       audio.volume = 0;
     }
-    document.getElementById("volumeFill").style.width = audio.volume*100 + "%";
+    document.getElementById("volumeFill").style.width = audio.volume * 100 + "%";
     this.setState({ isMuted: !this.state.isMuted })
+  }
+
+  toggleLeftColView() {
+    document.getElementById("leftColView").classList.toggle("showLeftCol");
+    document.getElementById("rightColView").classList.toggle("decreaseRightCol");
+  }
+
+  volumeFillChange(vol) {
+    document.getElementById("volumeFill").style.width = vol * 100 + "%";
+    lastSavedVolume = vol;
+  }
+
+  timeFillChange(time) {
+    document.getElementById("timeFill").style.width = time + "%";
   }
 
   render() {
     return (
       <div id="rightColView" className="rightColView">
-          <div className="album" id="albumArtwork" style={{backgroundImage: "url("+ img +")"}}></div>
+          <div className="album" id="albumArtwork"></div>
           <div className="info">
               <div className="progress-bar">
                   <div className="time--current" id="currentSongTime">--:--</div>
                   <div className="time--total" id="currentSongDuration">--:--</div>
-                  <div id="divFill" onClick={(e) => this.jumpToSongTime(e)}>
-                    <div id="fill"></div>
+                  <div id="divTimeFill" onClick={(e) => this.jumpToSongTime(e)}>
+                    <div id="timeFill"></div>
                   </div>    
               </div>
               <div className="currently-playing">
@@ -179,7 +175,7 @@ class RightColView extends Component {
                   <h3 className="album-name"></h3>
               </div>
               <div className="controls">
-                  <div className="option" onClick={() => toggleLeftColView()}><FontAwesomeIcon icon={faBars} /></div>
+                  <div className="option" onClick={() => this.toggleLeftColView()}><FontAwesomeIcon icon={faBars} /></div>
                   <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} /></div>
                   <div className="play" onClick={() => this.playButton()}>
                     {
