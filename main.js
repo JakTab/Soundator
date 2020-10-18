@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
-		width: 1100,
+		width: 800,
 		height: 800,
 		show: false,
 		icon: `${__dirname}/assets/icon.png`,

@@ -6,6 +6,9 @@ import './LeftColView.scss';
 
 import { playMusicItem } from './RightColView';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+
 export var musicList = [];
 export var songMetadata = [];
 var musicArray = [];
@@ -47,10 +50,13 @@ async function goToFolder(mainFolder) {
 }
 
 async function getItemsToMusicList(folder, index) {
+    var count = 1;
 	if (index == -1) {
 		if(typeof folder === 'object'){
 			fs.readdirSync(folder.filePaths[0]).forEach((folderItem) => {
-				musicList.push(folder.filePaths[0] + "/" + folderItem);
+                document.getElementById("notificationBar").innerHTML = count;
+                musicList.push(folder.filePaths[0] + "/" + folderItem);
+                count = count + 1;
 			});
 		} else if (typeof folder === 'string') {
 			fs.readdirSync(folder).forEach((folderItem) => {
@@ -64,7 +70,7 @@ async function getItemsToMusicList(folder, index) {
 			musicArray.push(folder + "/" + folderItem);
 		});
 		musicList[index] = musicArray;
-	}	
+    }	
 }
 
 async function addToPlaylistAsSong(musicAlbumSong) {
@@ -171,9 +177,16 @@ function createListItem(songData, path, musicAlbumArray, index) {
 
 const LeftColView = () => {
     return (
-        <div id="leftColView">
+        <div id="leftColView" className="leftColView">
 			<div id="search" onClick={() => getAllFolders()}></div>
 			<div id="list"></div>
+            <div id="bottomOptionsBar">
+                <div id="folderControlBar">
+                    <div id="backFolderControlButton" onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} /></div>
+                    <div id="forwardFolderControlButton" onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} /></div>
+                </div>
+                <div id="notificationBar"></div>
+            </div>
 		</div>
     )
 }

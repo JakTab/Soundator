@@ -7,8 +7,8 @@ $dark: #364F3C;
 @import url('https://fonts.googleapis.com/css?family=Questrial');
 $font: 'Questrial', sans-serif;
 
-#rightColView {
-  flex: 2;
+.rightColView {
+  flex: 0 0 100%;
   background: $white;
   position: relative;
   margin: auto;
@@ -17,6 +17,16 @@ $font: 'Questrial', sans-serif;
   overflow: hidden;
   border-radius: 5px;
   box-shadow: 5px 5px 15px rgba($dark, .4);
+  transition: flex 1000ms ease;
+}
+
+.decreaseRightCol {
+  flex: 0 0 66.66667%;
+}
+
+.showLeftCol {
+  flex: 0 0 33.3333%;
+  width: 100%;
 }
 
 .album {

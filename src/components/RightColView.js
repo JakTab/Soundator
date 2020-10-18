@@ -40,7 +40,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
-  document.getElementsByClassName("song-number")[0].innerHTML = songData.track.no + "/" + songData.track.of;
+  document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songMetadata.length;
   
   audio.ontimeupdate = () => {
     document.getElementById("currentSongTime").innerHTML = calcTime(audio.currentTime);
@@ -62,6 +62,11 @@ export function playMusicItem(path, imageUrl, index, songData) {
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
   audio.play();
   // this.setState({ isPlaying: true });
+}
+
+function toggleLeftColView() {
+  document.getElementById("leftColView").classList.toggle("showLeftCol");
+  document.getElementById("rightColView").classList.toggle("decreaseRightCol");
 }
 
 class RightColView extends Component {
@@ -158,7 +163,7 @@ class RightColView extends Component {
 
   render() {
     return (
-      <div id="rightColView">
+      <div id="rightColView" className="rightColView">
           <div className="album" id="albumArtwork" style={{backgroundImage: "url("+ img +")"}}></div>
           <div className="info">
               <div className="progress-bar">
@@ -174,7 +179,7 @@ class RightColView extends Component {
                   <h3 className="album-name"></h3>
               </div>
               <div className="controls">
-                  <div className="option"><FontAwesomeIcon icon={faBars} /></div>
+                  <div className="option" onClick={() => toggleLeftColView()}><FontAwesomeIcon icon={faBars} /></div>
                   <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} /></div>
                   <div className="play" onClick={() => this.playButton()}>
                     {

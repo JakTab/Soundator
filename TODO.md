@@ -14,16 +14,18 @@
 
 - [x] Song values added to currently-playing: song-name, artist-name, album-name, song-number (x out of y)
 
-- [ ] Proper file filtering (get all music files and folders, remove all else)
+- [x] View toggle for leftColView
 
-- [ ] Loading notification on the bottom left corner
+- [x] Notifications bar on the bottom left corner - basic concept
 
-- [ ] Catch isPlaying for RightColView when choosing song in LeftColView
+- [x] Navigation through folders - basic concept
 
 - [ ] Code refactor #1 - RightColView + project upkeep
 
-- [ ] On app load check the existance of a last opened folder / saved Music folder
+- [ ] Catch isPlaying for RightColView when choosing song in LeftColView
 
-- [ ] Navigation through folders - backward, forward
+- [ ] Proper file filtering (get all music files and folders, remove all else)
+
+- [ ] On app load check the existance of a last opened folder / saved Music folder
 
 - [ ] Creating/opening/removing playlists
