@@ -11,7 +11,6 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 export var musicList = [];
 export var songMetadata = [];
-var musicArray = [];
 
 const remote = require('electron').remote;
 const dialog = remote.dialog;
@@ -47,10 +46,6 @@ async function goToFolder(mainFolder) {
             createListItem(false, false, musicAlbumItem, index);
 		}
     });
-
-    if (songMetadata[0] === undefined) {
-        songMetadata.splice(0, 1);
-    }
 }
 
 async function getItemsToMusicList(folder, index) {
@@ -68,7 +63,7 @@ async function getItemsToMusicList(folder, index) {
 			});
 		}
 	} else {
-		musicArray = [];
+		var musicArray = [];
 		musicArray.push(folder);
 		fs.readdirSync(folder).forEach((folderItem) => {
 			musicArray.push(folder + "/" + folderItem);
@@ -82,10 +77,11 @@ async function addToPlaylistAsSong(musicAlbumSong) {
 	var readableStream = fs.createReadStream(musicAlbumSong);
 	await mm(readableStream, async function (err, metadata) {
         if (err) throw err;
-        songMetadata[metadata.track.no] = metadata;
+        songMetadata[metadata.track.no-1] = metadata;
         createListItem(metadata, path, false, false);
 		readableStream.close();
-	});
+    });
+    
 }
 
 function Uint8ArrayToJpgURL(arrayData) {
@@ -95,8 +91,7 @@ function Uint8ArrayToJpgURL(arrayData) {
 }
 
 function createListItem(songData, path, musicAlbumArray, index) {
-    let imageUrl = "", artistSong = "", artistName = "", artistAlbum = "", order = "",
-        title = "", cutStr = "";
+    let imageUrl = "", artistSong = "", artistName = "", artistAlbum = "", order = "", title = "", cutStr = "";
 
     //listItem
     let musicAlbumItem = document.createElement("div");
@@ -163,8 +158,8 @@ function createListItem(songData, path, musicAlbumArray, index) {
         //Song
         albumArtist = document.createElement("h3");
         albumArtist.className = "listItem-artist-name";
-
     }
+    
     albumArtist.innerHTML = artistName;
     listItemInfo.appendChild(albumArtist);
 

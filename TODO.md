@@ -20,9 +20,13 @@
 
 - [x] Navigation through folders - basic concept
 
-- [ ] Code refactor #1 - RightColView + project upkeep
+- [x] RightColView - LeftColView controls collapse & toggle
 
 - [x] Back/forward - make tracks go in order between each other
+
+- [ ] Code refactor #1 - RightColView + project upkeep
+
+===
 
 - [ ] Catch isPlaying for RightColView when choosing song in LeftColView
 
@@ -30,6 +34,8 @@
 
 - [ ] On app load check the existance of a last opened folder / saved Music folder
 
+- [ ] Top menu redesign
+
 - [ ] Creating/opening/removing playlists
 
-- [x] RightColView - controls collapse & toggle
+- [ ] Search functionality within the scope of the currently active playlist (dynamic)
