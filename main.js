@@ -1,6 +1,7 @@
 const path = require('path');
 const url = require('url');
 const { app, BrowserWindow, protocol } = require('electron');
+const config = require('electron-json-config');
 
 let mainWindow;
 
@@ -13,7 +14,7 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		width: 800,
-		height: 800,
+		height: 843,
 		show: false,
 		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {
@@ -68,7 +69,8 @@ app.on('ready', createMainWindow)
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
-		app.quit()
+		//config actions
+		app.quit();
 	}
 })
 

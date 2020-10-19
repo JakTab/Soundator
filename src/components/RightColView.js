@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+const config = require('electron-json-config');
 
 import './RightColView.scss';
 
@@ -11,6 +12,15 @@ var audio = new Audio();
 var lastSavedVolume;
 
 var currentSong = {	"index": "", "title": "",	"artist": "",	"album": "", "artwork": "" };
+currentSong.changeCurrentSong = changeCurrentSong;
+
+function changeCurrentSong(index, title, artist, album, artwork) {
+  this.index = index;
+  this.title = title;
+  this.artist = artist;
+  this.album = album;
+  this.artwork = artwork;
+}
 
 export function playMusicItem(path, imageUrl, index, songData) {
   audio.pause();
@@ -21,11 +31,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
   document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
   lastSavedVolume = audio.volume;
 
-  currentSong.index = index;
-  currentSong.title = songData.title;
-  currentSong.artist = songData.artist[0];
-  currentSong.album = songData.album;
-  currentSong.artwork = imageUrl;
+  currentSong.changeCurrentSong(index, songData.title, songData.artist[0], songData.album, imageUrl);
 
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
@@ -65,7 +71,12 @@ class RightColView extends Component {
     }
   }
 
-  componentDidMount() {
+  loadConfigFile() {
+    console.log(config.all());
+  }
+
+  async componentDidMount() {
+    await this.loadConfigFile();
     audio.volume = 1;
     lastSavedVolume = audio.volume;
     this.volumeFillChange(audio.volume);
@@ -155,19 +166,19 @@ class RightColView extends Component {
   render() {
     return (
       <div id="rightColView" className="rightColView">
-        <div className="album" id="albumArtwork"></div>
+        <div className="album" id="albumArtwork" />
         <div className="info">
           <div className="progress-bar">
               <div className="time--current" id="currentSongTime">--:--</div>
               <div className="time--total" id="currentSongDuration">--:--</div>
               <div id="divTimeFill" onClick={(e) => this.jumpToSongTime(e)}>
-                <div id="timeFill"></div>
+                <div id="timeFill" />
               </div>
           </div>
           <div className="currently-playing">
-            <h2 className="song-name"></h2>
-            <h3 className="artist-name"></h3>
-            <h3 className="album-name"></h3>
+            <h2 className="song-name" />
+            <h3 className="artist-name" />
+            <h3 className="album-name" />
           </div>
           <div className="controls">
             <div className="option" onClick={() => this.toggleLeftColView()}><FontAwesomeIcon icon={faBars} /></div>

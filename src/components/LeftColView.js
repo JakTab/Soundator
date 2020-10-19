@@ -15,6 +15,8 @@ export var songMetadata = [];
 const remote = require('electron').remote;
 const dialog = remote.dialog;
 
+const albumArt = require('album-art');
+
 async function getAllFolders() {
 	let mainFolder = await dialog.showOpenDialog({ properties: ["openDirectory"] });
 	goToFolder(mainFolder);
@@ -81,7 +83,6 @@ async function addToPlaylistAsSong(musicAlbumSong) {
         createListItem(metadata, path, false, false);
 		readableStream.close();
     });
-    
 }
 
 function Uint8ArrayToJpgURL(arrayData) {
@@ -90,7 +91,14 @@ function Uint8ArrayToJpgURL(arrayData) {
     return URL.createObjectURL(blob);
 }
 
-function createListItem(songData, path, musicAlbumArray, index) {
+function getAlbumCoverOnline(artistName, albumName) {
+    var promise = new Promise(function(resolve, reject) {
+        resolve(albumArt(artistName, {album: albumName, size: 'medium'}));
+      });
+    return promise;
+}
+
+async function createListItem(songData, path, musicAlbumArray, index) {
     let imageUrl = "", artistSong = "", artistName = "", artistAlbum = "", order = "", title = "", cutStr = "";
 
     //listItem
@@ -99,7 +107,12 @@ function createListItem(songData, path, musicAlbumArray, index) {
 
     if (songData != false) {
         //Song
-        imageUrl = Uint8ArrayToJpgURL(songData.picture[0].data);
+        if (typeof songData.picture[0] != 'undefined') {
+            imageUrl = Uint8ArrayToJpgURL(songData.picture[0].data);
+        } else {
+            imageUrl = await getAlbumCoverOnline(songData.artist[0], songData.album);
+        }
+
         order = songData.track.no-1;
         musicAlbumItem.onclick = () => {
             playMusicItem(path, imageUrl, order, songData);
@@ -177,14 +190,14 @@ function createListItem(songData, path, musicAlbumArray, index) {
 const LeftColView = () => {
     return (
         <div id="leftColView" className="leftColView">
-			<div id="search" onClick={() => getAllFolders()}></div>
-			<div id="list"></div>
+			<div id="search" onClick={() => getAllFolders()} />
+			<div id="list" />
             <div id="bottomOptionsBar">
                 <div id="folderControlBar">
                     <div id="backFolderControlButton" onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} /></div>
                     <div id="forwardFolderControlButton" onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} /></div>
                 </div>
-                <div id="notificationBar"></div>
+                <div id="notificationBar" />
             </div>
 		</div>
     )
