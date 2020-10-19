@@ -14,6 +14,7 @@ export var songMetadata = [];
 
 const remote = require('electron').remote;
 const dialog = remote.dialog;
+const config = require('electron-json-config');
 
 const albumArt = require('album-art');
 
@@ -58,11 +59,13 @@ async function getItemsToMusicList(folder, index) {
                 document.getElementById("notificationBar").innerHTML = count;
                 musicList.push(folder.filePaths[0] + "/" + folderItem);
                 count = count + 1;
-			});
+            });
+            config.set("currentSavedPlaylist", folder.filePaths[0]);
 		} else if (typeof folder === 'string') {
 			fs.readdirSync(folder).forEach((folderItem) => {
 				musicList.push(folder + "/" + folderItem);
-			});
+            });
+            config.set("currentSavedPlaylist", folder);
 		}
 	} else {
 		var musicArray = [];
@@ -94,7 +97,7 @@ function Uint8ArrayToJpgURL(arrayData) {
 function getAlbumCoverOnline(artistName, albumName) {
     var promise = new Promise(function(resolve, reject) {
         resolve(albumArt(artistName, {album: albumName, size: 'medium'}));
-      });
+    });
     return promise;
 }
 

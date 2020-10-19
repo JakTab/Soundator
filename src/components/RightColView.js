@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-const config = require('electron-json-config');
-
 import './RightColView.scss';
 
 import * as calcFunctions from '../utils/calcFunctions';
@@ -8,18 +6,21 @@ import { musicList, songMetadata } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
 
+const config = require('electron-json-config');
+
 var audio = new Audio();
 var lastSavedVolume;
 
-var currentSong = {	"index": "", "title": "",	"artist": "",	"album": "", "artwork": "" };
+var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "" };
 currentSong.changeCurrentSong = changeCurrentSong;
 
-function changeCurrentSong(index, title, artist, album, artwork) {
+function changeCurrentSong(index, title, artist, album, artwork, path) {
   this.index = index;
   this.title = title;
   this.artist = artist;
   this.album = album;
   this.artwork = artwork;
+  this.path = path;
 }
 
 export function playMusicItem(path, imageUrl, index, songData) {
@@ -31,13 +32,13 @@ export function playMusicItem(path, imageUrl, index, songData) {
   document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
   lastSavedVolume = audio.volume;
 
-  currentSong.changeCurrentSong(index, songData.title, songData.artist[0], songData.album, imageUrl);
+  currentSong.changeCurrentSong(index, songData.title, songData.artist[0], songData.album, imageUrl, audio.src);
 
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
   document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songMetadata.length;
-  
+
   audio.ontimeupdate = () => {
     document.getElementById("currentSongTime").innerHTML = calcFunctions.calcTime(audio.currentTime);
     document.getElementById("timeFill").style.width = calcFunctions.calcProgressBar(audio);
@@ -60,7 +61,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
   console.log("Now playing: " + audio.src);
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
   audio.play();
-  // this.setState({ isPlaying: true });
+  config.set("currentSavedSong", currentSong);
 }
 class RightColView extends Component {
   constructor(props) {

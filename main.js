@@ -1,7 +1,6 @@
 const path = require('path');
 const url = require('url');
 const { app, BrowserWindow, protocol } = require('electron');
-const config = require('electron-json-config');
 
 let mainWindow;
 
@@ -65,11 +64,10 @@ function createMainWindow() {
 	mainWindow.on('closed', () => (mainWindow = null))
 }
 
-app.on('ready', createMainWindow)
+app.on('ready', createMainWindow);
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
-		//config actions
 		app.quit();
 	}
 })

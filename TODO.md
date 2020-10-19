@@ -24,7 +24,7 @@
 
 - [x] Back/forward - make tracks go in order between each other
 
-- [ ] Code refactor #1 - RightColView + project upkeep
+- [x] Code refactor #1 - RightColView + project upkeep
 
 ===
 
