@@ -4,7 +4,7 @@ import mm from 'musicmetadata';
 
 import './LeftColView.scss';
 
-import { playMusicItem } from './RightColView';
+import { currentSong, playMusicItem } from './RightColView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -12,9 +12,11 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 export var musicList = [];
 export var songMetadata = [];
 
+var currentPath = "";
+
 const remote = require('electron').remote;
 const dialog = remote.dialog;
-const config = require('electron-json-config');
+//const config = require('electron-json-config');
 
 const albumArt = require('album-art');
 
@@ -60,12 +62,12 @@ async function getItemsToMusicList(folder, index) {
                 musicList.push(folder.filePaths[0] + "/" + folderItem);
                 count = count + 1;
             });
-            config.set("currentSavedPlaylist", folder.filePaths[0]);
+            //config.set("currentSavedPlaylist", folder.filePaths[0]);
 		} else if (typeof folder === 'string') {
 			fs.readdirSync(folder).forEach((folderItem) => {
 				musicList.push(folder + "/" + folderItem);
             });
-            config.set("currentSavedPlaylist", folder);
+            //config.set("currentSavedPlaylist", folder);
 		}
 	} else {
 		var musicArray = [];
@@ -116,6 +118,20 @@ async function createListItem(songData, path, musicAlbumArray, index) {
             imageUrl = await getAlbumCoverOnline(songData.artist[0], songData.album);
         }
 
+        currentPath = "";
+        var splitPath = path.split('/').filter(function (el) {
+            return el != "";
+        });
+
+        splitPath.forEach((element, index) => {
+            if (index < splitPath.length - 1) {
+                currentPath += element;
+                if (index != splitPath.length - 2) {
+                    currentPath += "\\"
+                }
+            }
+        })
+
         order = songData.track.no-1;
         musicAlbumItem.onclick = () => {
             playMusicItem(path, imageUrl, order, songData);
@@ -125,13 +141,15 @@ async function createListItem(songData, path, musicAlbumArray, index) {
         artistName = songData.album;
     } else if (index > -1) {
         //Folder
-        console.log(index);
-        console.log("! " + musicAlbumArray[0].split('/').pop());
+        currentPath = musicAlbumArray[0].split('/')[0];
         title = musicAlbumArray[0].split('/').pop();
-        console.log(title);
         cutStr = title.indexOf(" - ");
-        artistName = title.substring(0, cutStr);
-        artistAlbum = title.substring(cutStr+2, title.length);
+        if (cutStr != -1) {
+            artistName = title.substring(0, cutStr);
+            artistAlbum = title.substring(cutStr+2, title.length);
+        } else {
+            artistAlbum = title;
+        }
         order = index;
         musicAlbumItem.onclick = () => {
             goToFolder(musicAlbumArray[0]);
@@ -155,8 +173,6 @@ async function createListItem(songData, path, musicAlbumArray, index) {
     listItemInfo.className = "listItemInfo";
 
     var albumSong = "", albumArtist = "", albumName = "";
-
-    console.log(artistSong);
 
     if (artistSong != "" && artistSong != undefined) {
         //Song
@@ -188,6 +204,23 @@ async function createListItem(songData, path, musicAlbumArray, index) {
     musicAlbumItem.appendChild(listItemInfo);
     
 	document.getElementById("list").appendChild(musicAlbumItem);
+}
+
+function backFolder() {
+    var newPath = "";
+    var splitPath = currentPath.split('\\').filter(function (el) {
+        return el != "";
+    });
+
+    if (splitPath.length > 1) {
+        splitPath.forEach((element, index) => {
+            if (index <= splitPath.length-2) {
+                newPath += element + "\\";
+            }
+        });
+        
+        goToFolder(newPath, -1);
+    }
 }
 
 const LeftColView = () => {

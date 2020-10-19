@@ -6,12 +6,12 @@ import { musicList, songMetadata } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
 
-const config = require('electron-json-config');
+//const config = require('electron-json-config');
 
 var audio = new Audio();
 var lastSavedVolume;
 
-var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "" };
+export var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "" };
 currentSong.changeCurrentSong = changeCurrentSong;
 
 function changeCurrentSong(index, title, artist, album, artwork, path) {
@@ -61,7 +61,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
   console.log("Now playing: " + audio.src);
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
   audio.play();
-  config.set("currentSavedSong", currentSong);
+  //config.set("currentSavedSong", currentSong);
 }
 class RightColView extends Component {
   constructor(props) {
@@ -73,11 +73,11 @@ class RightColView extends Component {
   }
 
   loadConfigFile() {
-    console.log(config.all());
+    //console.log(config.all());
   }
 
   async componentDidMount() {
-    await this.loadConfigFile();
+    //await this.loadConfigFile();
     audio.volume = 1;
     lastSavedVolume = audio.volume;
     this.volumeFillChange(audio.volume);

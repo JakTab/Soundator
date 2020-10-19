@@ -26,7 +26,11 @@
 
 - [x] Code refactor #1 - RightColView + project upkeep
 
+- [x] Folder navigation up the level
+
 ===
+
+- [ ] electron-json-config not working - why? check for more stable alternatives
 
 - [ ] Catch isPlaying for RightColView when choosing song in LeftColView
 
@@ -36,6 +40,10 @@
 
 - [ ] Top menu redesign
 
+- [ ] Item list ordering by disk number (multiple disk albums)
+
 - [ ] Creating/opening/removing playlists
+
+- [ ] Folder navigation one level deeper
 
 - [ ] Search functionality within the scope of the currently active playlist (dynamic)
