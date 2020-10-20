@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import './RightColView.scss';
 
 import * as calcFunctions from '../utils/calcFunctions';
@@ -6,12 +7,13 @@ import { musicList, songMetadata, goToFolder } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
 
+const store = require('electron-store');
+const config = new store();
+
+const Mousetrap = require('mousetrap');
+
 var audio = new Audio();
 var lastSavedVolume;
-
-const store = require('electron-store');
-
-const config = new store();
 
 export var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "" };
 currentSong.changeCurrentSong = changeCurrentSong;
@@ -27,7 +29,7 @@ function changeCurrentSong(index, title, artist, album, artwork, path) {
 
 export function playMusicItem(path, imageUrl, index, songData) {
   audio.pause();
-  // this.setState({ isPlaying: false });
+  isMusicPlaying(false);
   audio.src = path;
   audio.currentTime = 0;
 
@@ -56,19 +58,20 @@ export function playMusicItem(path, imageUrl, index, songData) {
     } else {
       audio.pause();
       audio.currentTime = 0;
-      // this.setState({ isPlaying: false });
+      isMusicPlaying(false);
     }
   }
 
   console.log("Now playing: " + audio.src);
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
   audio.play();
+  isMusicPlaying(true);
   config.set("currentSavedSong", currentSong);
 }
 
 function loadSavedSong() {
   audio.pause();
-  // this.setState({ isPlaying: false });
+  isMusicPlaying(false);
   audio.src = currentSong.path;
   audio.currentTime = 0;
 
@@ -95,18 +98,25 @@ function loadSavedSong() {
     } else {
       audio.pause();
       audio.currentTime = 0;
-      // this.setState({ isPlaying: false });
+      isMusicPlaying(false);
     }
   }
 
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
 }
 
+function isMusicPlaying(isPlaying) {
+  if (isPlaying) {
+    ReactDOM.render(<FontAwesomeIcon icon={faPause} />, document.getElementById('play'));
+  } else {
+    ReactDOM.render(<FontAwesomeIcon icon={faPlay} />, document.getElementById('play'));
+  }
+}
+
 class RightColView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        isPlaying: false,
         isMuted: false,
     }
   }
@@ -125,6 +135,7 @@ class RightColView extends Component {
 
   async componentDidMount() {
     await this.loadConfigFile();
+    Mousetrap.bind('space', () => this.playButton());
     audio.volume = 1;
     lastSavedVolume = audio.volume;
     this.volumeFillChange(audio.volume);
@@ -134,10 +145,10 @@ class RightColView extends Component {
     if (audio.src != "") {
       if (!audio.paused) {
         audio.pause();
-        this.setState({ isPlaying: false });
+        isMusicPlaying(false);
       } else {
         audio.play();
-        this.setState({ isPlaying: true });
+        isMusicPlaying(true);
       }
     }
   }
@@ -231,8 +242,8 @@ class RightColView extends Component {
           <div className="controls">
             <div className="option" onClick={() => this.toggleLeftColView()}><FontAwesomeIcon icon={faBars} /></div>
             <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} /></div>
-            <div className="play" onClick={() => this.playButton()}>
-              { this.state.isPlaying ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} /> }
+            <div id="play" className="play" onClick={() => this.playButton()}>
+              <FontAwesomeIcon icon={faPlay} />
             </div>
             <div className="next" onClick={() => this.forwardButton(currentSong.index)}><FontAwesomeIcon icon={faForward} /></div>
             <div className="volume" onClick={() => this.muteUnmuteButton()}><FontAwesomeIcon icon={faVolumeUp} /></div>

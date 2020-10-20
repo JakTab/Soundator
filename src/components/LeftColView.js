@@ -8,6 +8,7 @@ import { playMusicItem } from './RightColView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import * as filterFunctions from '../utils/filterFunctions';
 
 export var musicList = [];
 export var songMetadata = [];
@@ -37,10 +38,11 @@ export async function goToFolder(mainFolder) {
 	await getItemsToMusicList(mainFolder, -1);
 
 	musicList.forEach((musicListItem, index) => {
-		var title = musicListItem.split('.').pop();
-		if (title != "txt" && title != "mp3" && title != "jpg" && title != "png" && title != "flac") {
-			getItemsToMusicList(musicListItem, index);
-		}
+        var title = musicListItem.split('.').pop();
+        if (filterFunctions.isFileAcceptable(title)) {
+            //fs.js:854 Uncaught (in promise) Error: ENOTDIR: not a directory, scandir
+            getItemsToMusicList(musicListItem, index);
+        }
     });
 
 	musicList.forEach((musicAlbumItem, index) => {

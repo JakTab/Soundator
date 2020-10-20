@@ -32,15 +32,17 @@
 
 - [x] On app load check the existance of a last opened folder / saved Music folder
 
+- [x] Proper file filtering (get all music files and folders, remove all else)
+
+- [x] space button - play/pause
+
+- [x] Catch isPlaying for RightColView when choosing song in LeftColView
+
 ===
 
 - [ ] Code refactor #2
 
-- [ ] space button - play/pause
-
-- [ ] Catch isPlaying for RightColView when choosing song in LeftColView
-
-- [ ] Proper file filtering (get all music files and folders, remove all else)
+- [ ] LeftColView.js - line 43 - bug on filtering
 
 - [ ] Change album cover image generation (Uint8ArrayToJpgURL)
 
