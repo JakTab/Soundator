@@ -28,15 +28,21 @@
 
 - [x] Folder navigation up the level
 
+- [x] electron-json-config not working - why? check for more stable alternatives
+
+- [x] On app load check the existance of a last opened folder / saved Music folder
+
 ===
 
-- [ ] electron-json-config not working - why? check for more stable alternatives
+- [ ] Code refactor #2
+
+- [ ] space button - play/pause
 
 - [ ] Catch isPlaying for RightColView when choosing song in LeftColView
 
 - [ ] Proper file filtering (get all music files and folders, remove all else)
 
-- [ ] On app load check the existance of a last opened folder / saved Music folder
+- [ ] Change album cover image generation (Uint8ArrayToJpgURL)
 
 - [ ] Top menu redesign
 

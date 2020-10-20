@@ -19,7 +19,7 @@
     "build": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
     "package": "npm run build",
     "postpackage": "electron-packager ./ --out=./release-builds",
-    "dist": "electron-packager"
+    "dist": "electron-builder"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
@@ -27,7 +27,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "album-art": "^2.0.2",
-    "electron-json-config": "^1.5.3",
+    "electron-store": "^6.0.1",
     "musicmetadata": "^2.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

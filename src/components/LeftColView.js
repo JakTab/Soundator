@@ -4,7 +4,7 @@ import mm from 'musicmetadata';
 
 import './LeftColView.scss';
 
-import { currentSong, playMusicItem } from './RightColView';
+import { playMusicItem } from './RightColView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -16,16 +16,20 @@ var currentPath = "";
 
 const remote = require('electron').remote;
 const dialog = remote.dialog;
-//const config = require('electron-json-config');
+const store = require('electron-store');
+
+const config = new store();
 
 const albumArt = require('album-art');
 
 async function getAllFolders() {
-	let mainFolder = await dialog.showOpenDialog({ properties: ["openDirectory"] });
-	goToFolder(mainFolder);
+    let mainFolder = await dialog.showOpenDialog({ properties: ["openDirectory"] });
+    if (!mainFolder.canceled) {
+        goToFolder(mainFolder);
+    }
 }
 
-async function goToFolder(mainFolder) {
+export async function goToFolder(mainFolder) {
     musicList = [];
     songMetadata = [];
 
@@ -62,12 +66,12 @@ async function getItemsToMusicList(folder, index) {
                 musicList.push(folder.filePaths[0] + "/" + folderItem);
                 count = count + 1;
             });
-            //config.set("currentSavedPlaylist", folder.filePaths[0]);
+            config.set("currentSavedPlaylist", folder.filePaths[0]);
 		} else if (typeof folder === 'string') {
 			fs.readdirSync(folder).forEach((folderItem) => {
 				musicList.push(folder + "/" + folderItem);
             });
-            //config.set("currentSavedPlaylist", folder);
+            config.set("currentSavedPlaylist", folder);
 		}
 	} else {
 		var musicArray = [];

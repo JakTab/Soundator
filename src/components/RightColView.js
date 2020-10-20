@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import './RightColView.scss';
 
 import * as calcFunctions from '../utils/calcFunctions';
-import { musicList, songMetadata } from './LeftColView';
+import { musicList, songMetadata, goToFolder } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
 
-//const config = require('electron-json-config');
-
 var audio = new Audio();
 var lastSavedVolume;
+
+const store = require('electron-store');
+
+const config = new store();
 
 export var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "" };
 currentSong.changeCurrentSong = changeCurrentSong;
@@ -28,7 +30,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
   // this.setState({ isPlaying: false });
   audio.src = path;
   audio.currentTime = 0;
-  
+
   document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
   lastSavedVolume = audio.volume;
 
@@ -61,8 +63,45 @@ export function playMusicItem(path, imageUrl, index, songData) {
   console.log("Now playing: " + audio.src);
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
   audio.play();
-  //config.set("currentSavedSong", currentSong);
+  config.set("currentSavedSong", currentSong);
 }
+
+function loadSavedSong() {
+  audio.pause();
+  // this.setState({ isPlaying: false });
+  audio.src = currentSong.path;
+  audio.currentTime = 0;
+
+  document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
+  lastSavedVolume = audio.volume;
+
+  document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
+  document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
+  document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
+  //document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songMetadata.length;
+
+  audio.ontimeupdate = () => {
+    document.getElementById("currentSongTime").innerHTML = calcFunctions.calcTime(audio.currentTime);
+    document.getElementById("timeFill").style.width = calcFunctions.calcProgressBar(audio);
+  }
+
+  audio.onloadedmetadata = () => {
+    document.getElementById("currentSongDuration").innerHTML = calcFunctions.calcTime(audio.duration);
+  }
+
+  audio.onended = () => {
+    if (index != musicList.length-1) {
+      playMusicItem(musicList[index+1], audio.src, index+1, songMetadata[index+1]);
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      // this.setState({ isPlaying: false });
+    }
+  }
+
+  document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
+}
+
 class RightColView extends Component {
   constructor(props) {
     super(props);
@@ -73,11 +112,19 @@ class RightColView extends Component {
   }
 
   loadConfigFile() {
-    //console.log(config.all());
+    if (config.get('currentSavedPlaylist') != undefined) {
+      goToFolder(config.get('currentSavedPlaylist'));
+    }
+    if (config.get('currentSavedSong') != undefined) {
+      currentSong = config.get('currentSavedSong');
+      console.log(currentSong);
+      currentSong.changeCurrentSong = changeCurrentSong;
+      loadSavedSong();
+    }
   }
 
   async componentDidMount() {
-    //await this.loadConfigFile();
+    await this.loadConfigFile();
     audio.volume = 1;
     lastSavedVolume = audio.volume;
     this.volumeFillChange(audio.volume);
