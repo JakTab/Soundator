@@ -39,12 +39,6 @@ $font: 'Questrial', sans-serif;
   position: absolute;
 }
 
-.clicked {
-  color: $primary;
-  transform: scale(1.2);
-  transition: all .4s ease;
-}
-
 .info {
   height: 40%;
   width: 100%;
@@ -53,10 +47,6 @@ $font: 'Questrial', sans-serif;
   background: rgba($white, .85);
   transform: translateY(35px);
   transition: all .5s ease-in-out;
-}
-
-.up {
-  transform: translateY(0px);
 }
 
 .progress-bar {
@@ -143,7 +133,7 @@ $font: 'Questrial', sans-serif;
   }
 }
 
-.play, .pause, .next, .previous, .option, .add, .volume, .shuffle {
+.play, .next, .previous, .option, .volume {
   transition: all .5s ease;
   &:hover {
     color: lighten($dark, 15%);

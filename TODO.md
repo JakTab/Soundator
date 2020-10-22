@@ -40,13 +40,13 @@
 
 - [x] LeftColView.js - rebuild music folders/music item creations
 
+- [x] LeftColView.js - Change album cover image generation (Uint8ArrayToJpgURL)
+
 ===
 
-- [ ] RightColView.js - handle onEnded when playing track saved in config
-
-- [ ] LeftColView.js - Change album cover image generation (Uint8ArrayToJpgURL)
-
 - [ ] Code refactor #2
+
+- [ ] RightColView.js - handle onEnded when playing track saved in config
 
 - [ ] Top menu redesign
 

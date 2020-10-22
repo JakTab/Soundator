@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import * as calcFunctions from './calcFunctions';
 import { musicList, songsMetadata } from '../components/LeftColView';
+import { playMusicItem } from '../components/RightColView';
 
 class audioController {
     constructor() {
@@ -25,10 +26,12 @@ class audioController {
                 this.stopMusic();
             }
         } else {
-            if (index != musicList.length-1) {
-                playMusicItem(musicList[index+1], this.getAudioSrc(), index+1, songsMetadata[index+1]);
-            } else {
-                this.stopMusic();
+            this.audio.onended = () => {
+                if (index != musicList.length-1) {
+                    playMusicItem(musicList[index+1], this.getAudioSrc(), index+1, songsMetadata[index+1]);
+                } else {
+                    this.stopMusic();
+                }
             }
         }
     }

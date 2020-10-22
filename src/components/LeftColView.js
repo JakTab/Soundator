@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as filterFunctions from '../utils/filterFunctions';
 
+import * as byte64 from 'byte-base64';
+
 export var musicList = [];
 export var songsMetadata = [];
 
@@ -74,9 +76,7 @@ async function addToPlaylistAsSong(path) {
 }
 
 function Uint8ArrayToJpgURL(arrayData) {
-	var arrayBufferView = new Uint8Array(arrayData);
-    var blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-    return URL.createObjectURL(blob);
+    return "data:image/png;base64," + byte64.bytesToBase64(arrayData);
 }
 
 function getAlbumCoverOnline(artistName, albumName) {
@@ -101,28 +101,13 @@ async function createListItem(songData, path, musicFolderPath, index) {
         } else {
             imageUrl = await getAlbumCoverOnline(songData.artist[0], songData.album);
         }
-
-        var currentPath = "";
-        var splitPath = path.split('\\').filter(function (el) {
-            return el != "";
-        });
-
-        splitPath.forEach((element, index) => {
-            if (index < splitPath.length - 1) {
-                currentPath += element;
-                if (index != splitPath.length - 2) {
-                    currentPath += "\\"
-                }
-            }
-        })
-
+        artistSong = songData.track.no + ". " + songData.title;
+        artistAlbum = songData.artist[0];
+        artistName = songData.album;
         order = songData.track.no-1;
         musicAlbumItem.onclick = () => {
             playMusicItem(path, imageUrl, order, songData);
         }
-        artistSong = songData.track.no + ". " + songData.title;
-        artistAlbum = songData.artist[0];
-        artistName = songData.album;
     } else if (index > -1) {
         //Folder
         var folderPathSplit = musicFolderPath.split('\\');
