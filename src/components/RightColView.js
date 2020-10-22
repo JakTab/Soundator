@@ -1,17 +1,17 @@
 /* Imports */
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faVolumeUp, faBackward, faPlay, faForward } from "@fortawesome/free-solid-svg-icons";
 import * as Store from 'electron-store';
 import * as Mousetrap from 'mousetrap';
 import './RightColView.scss';
 import * as calcFunctions from '../utils/calcFunctions';
+import audioController from '../utils/audioController';
 import { musicList, songsMetadata, goToFolder } from './LeftColView';
 
 /* Globals */
 var config = new Store();
-var audio = new Audio();
+var audio = new audioController();
 var lastSavedVolume;
 
 export var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "" };
@@ -26,82 +26,42 @@ function changeCurrentSong(index, title, artist, album, artwork, path) {
   this.path = path;
 }
 
+//
 export function playMusicItem(path, imageUrl, index, songData) {
-  audio.pause();
-  audio.currentTime = 0;
-  isMusicPlaying(false);
-  audio.src = path;
+  audio.stopMusic();
+  audio.setAudioSrc(path);
+  audio.setOnEnded(index);
 
-  document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
-  lastSavedVolume = audio.volume;
+  document.getElementById("volumeFill").style.width = (audio.getAudioVolume() * 100) + "%";
+  lastSavedVolume = audio.getAudioVolume();
 
-  currentSong.changeCurrentSong(index, songData.title, songData.artist[0], songData.album, imageUrl, audio.src);
+  currentSong.changeCurrentSong(index, songData.title, songData.artist[0], songData.album, imageUrl, audio.getAudioSrc());
 
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
   document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length;
 
-  audio.ontimeupdate = () => {
-    document.getElementById("currentSongTime").innerHTML = calcFunctions.calcTime(audio.currentTime);
-    document.getElementById("timeFill").style.width = calcFunctions.calcProgressBar(audio);
-  }
-
-  audio.onloadedmetadata = () => {
-    document.getElementById("currentSongDuration").innerHTML = calcFunctions.calcTime(audio.duration);
-  }
-
-  audio.onended = () => {
-    audio.pause();
-    audio.currentTime = 0;
-    isMusicPlaying(false);
-  }
-
-  console.log("Now playing: " + audio.src);
+  console.log("Now playing: " + audio.getAudioSrc());
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
-  audio.play();
-  isMusicPlaying(true);
+  audio.playMusic();
   config.set("currentSavedSong", currentSong);
 }
 
 function loadSavedSong() {
-  audio.pause();
-  isMusicPlaying(false);
-  audio.src = currentSong.path;
-  audio.currentTime = 0;
+  audio.stopMusic();
+  audio.setAudioSrc(currentSong.path);
+  audio.setOnEnded(null);
 
-  document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
-  lastSavedVolume = audio.volume;
+  document.getElementById("volumeFill").style.width = (audio.getAudioVolume() * 100) + "%";
+  lastSavedVolume = audio.getAudioVolume();
 
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
   //document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length;
 
-  audio.ontimeupdate = () => {
-    document.getElementById("currentSongTime").innerHTML = calcFunctions.calcTime(audio.currentTime);
-    document.getElementById("timeFill").style.width = calcFunctions.calcProgressBar(audio);
-  }
-
-  audio.onloadedmetadata = () => {
-    document.getElementById("currentSongDuration").innerHTML = calcFunctions.calcTime(audio.duration);
-  }
-
-  audio.onended = () => {
-    audio.pause();
-    audio.currentTime = 0;
-    isMusicPlaying(false);
-  }
-
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
-}
-
-function isMusicPlaying(isPlaying) {
-  if (isPlaying) {
-    ReactDOM.render(<FontAwesomeIcon icon={faPause} />, document.getElementById('play'));
-  } else {
-    ReactDOM.render(<FontAwesomeIcon icon={faPlay} />, document.getElementById('play'));
-  }
 }
 
 class RightColView extends Component {
@@ -118,35 +78,32 @@ class RightColView extends Component {
     }
     if (config.get('currentSavedSong') != undefined) {
       currentSong = config.get('currentSavedSong');
-      console.log(currentSong);
       currentSong.changeCurrentSong = changeCurrentSong;
       loadSavedSong();
     }
-    console.log(config.store);
+    //console.log("config.store: " + config.store);
   }
 
   async componentDidMount() {
     await this.loadConfigFile();
     Mousetrap.bind('space', () => this.playButton());
-    audio.volume = 1;
-    lastSavedVolume = audio.volume;
-    this.volumeFillChange(audio.volume);
+    audio.setAudioVolume(1);
+    lastSavedVolume = audio.getAudioVolume();
+    this.volumeFillChange(audio.getAudioVolume());
   }
 
   playButton() {
-    if (audio.src != "") {
-      if (!audio.paused) {
-        audio.pause();
-        isMusicPlaying(false);
+    if (audio.getAudioSrc() != "") {
+      if (!audio.isPaused()) {
+        audio.pauseMusic();
       } else {
-        audio.play();
-        isMusicPlaying(true);
+        audio.playMusic();
       }
     }
   }
   
   backButton(currentSongIndex) {
-    if (audio.src != "") {
+    if (audio.getAudioSrc() != "") {
       if (currentSongIndex > 0) {
         playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1, songsMetadata[currentSongIndex-1]);
       }
@@ -154,7 +111,7 @@ class RightColView extends Component {
   }
   
   forwardButton(currentSongIndex) {
-    if (audio.src != "") {
+    if (audio.getAudioSrc() != "") {
       if (currentSongIndex < musicList.length-1) {
         playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1, songsMetadata[currentSongIndex+1]);
       }
@@ -162,41 +119,41 @@ class RightColView extends Component {
   }
   
   jumpToSongTime(event) {
-    if (audio.src != "") {
+    if (audio.getAudioSrc() != "") {
       var calculate = calcFunctions.calcDivFillPercentage(event, "TimeFill");
       this.timeFillChange(calculate);
-      audio.currentTime = audio.duration * (calculate/100);
+      audio.setCurrentTime(audio.getAudioDuration() * (calculate/100));
     }
   }
 
   changeSongVolume(event) {
     var calculate = calcFunctions.calcDivFillPercentage(event, "VolumeFill");
     this.volumeFillChange(calculate/100);
-    audio.volume = calculate/100;
+    audio.setAudioVolume(calculate/100);
   }
 
   changeSongVolumeByBit(event) {
     var volumeChange = 0;
     if (event.deltaY < 0) {
       //up
-      volumeChange = audio.volume + 0.1;
+      volumeChange = audio.getAudioVolume() + 0.1;
       if (volumeChange > 1) volumeChange = 1;
     } else if (event.deltaY > 0) {
       //down
-      volumeChange = audio.volume - 0.1;
+      volumeChange = audio.getAudioVolume() - 0.1;
       if (volumeChange < 0) volumeChange = 0;
     }
-    audio.volume = volumeChange;
-    this.volumeFillChange(audio.volume);
+    audio.setAudioVolume(volumeChange);
+    this.volumeFillChange(audio.getAudioVolume());
   }
 
   muteUnmuteButton() {
     if (this.state.isMuted) {
-      audio.volume = lastSavedVolume; 
+      audio.setAudioVolume(lastSavedVolume);
     } else {
-      audio.volume = 0;
+      audio.setAudioVolume(0);
     }
-    document.getElementById("volumeFill").style.width = audio.volume * 100 + "%";
+    document.getElementById("volumeFill").style.width = audio.getAudioVolume() * 100 + "%";
     this.setState({ isMuted: !this.state.isMuted });
   }
 
@@ -244,7 +201,7 @@ class RightColView extends Component {
             </div>
           </div>
           <div className="currently-playing">
-            <h3 className="song-number"></h3>
+            <h3 className="song-number" />
           </div>
         </div>
       </div>
