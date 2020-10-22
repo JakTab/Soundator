@@ -1,4 +1,4 @@
-let unacceptableFormats = ["exe", "ini", "txt", "jpg", "png", "bmp", "cue"]
+let unacceptableFormats = ["exe", "ini", "txt", "jpg", "jpeg", "png", "bmp", "cue", "log"]
 let acceptableMusicFormats = ["mp3", "flac", "wav", "mp4", "aac", "ogg", "webm", "ogg"]
 
 export function isFileAcceptable(fileExtension) {
