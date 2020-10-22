@@ -11,7 +11,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as filterFunctions from '../utils/filterFunctions';
 
 export var musicList = [];
-export var songMetadata = [];
+export var songsMetadata = [];
 
 const dialog = require('electron').remote.dialog;
 
@@ -29,7 +29,7 @@ async function getAllFolders() {
 
 export async function goToFolder(mainFolder) {
     musicList = [];
-    songMetadata = [];
+    songsMetadata = [];
 
 	document.getElementById("list").innerHTML = "";
     await getItemsToMusicList(mainFolder);
@@ -67,7 +67,7 @@ async function addToPlaylistAsSong(path) {
 	var readableStream = fs.createReadStream(path);
 	await mm(readableStream, async function (err, metadata) {
         if (err) throw err;
-        songMetadata[metadata.track.no-1] = metadata;
+        songsMetadata[metadata.track.no-1] = metadata;
         createListItem(metadata, path, false, false);
 		readableStream.close();
     });

@@ -1,17 +1,16 @@
+/* Imports */
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import './RightColView.scss';
-
-import * as calcFunctions from '../utils/calcFunctions';
-import { musicList, songMetadata, goToFolder } from './LeftColView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faVolumeUp, faBackward, faPlay, faPause, faForward } from "@fortawesome/free-solid-svg-icons";
+import * as Store from 'electron-store';
+import * as Mousetrap from 'mousetrap';
+import './RightColView.scss';
+import * as calcFunctions from '../utils/calcFunctions';
+import { musicList, songsMetadata, goToFolder } from './LeftColView';
 
-const store = require('electron-store');
-const config = new store();
-
-const Mousetrap = require('mousetrap');
-
+/* Globals */
+var config = new Store();
 var audio = new Audio();
 var lastSavedVolume;
 
@@ -29,9 +28,9 @@ function changeCurrentSong(index, title, artist, album, artwork, path) {
 
 export function playMusicItem(path, imageUrl, index, songData) {
   audio.pause();
+  audio.currentTime = 0;
   isMusicPlaying(false);
   audio.src = path;
-  audio.currentTime = 0;
 
   document.getElementById("volumeFill").style.width = (audio.volume * 100) + "%";
   lastSavedVolume = audio.volume;
@@ -41,7 +40,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
-  document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songMetadata.length;
+  document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length;
 
   audio.ontimeupdate = () => {
     document.getElementById("currentSongTime").innerHTML = calcFunctions.calcTime(audio.currentTime);
@@ -53,13 +52,9 @@ export function playMusicItem(path, imageUrl, index, songData) {
   }
 
   audio.onended = () => {
-    if (index != musicList.length-1) {
-      playMusicItem(musicList[index+1], audio.src, index+1, songMetadata[index+1]);
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-      isMusicPlaying(false);
-    }
+    audio.pause();
+    audio.currentTime = 0;
+    isMusicPlaying(false);
   }
 
   console.log("Now playing: " + audio.src);
@@ -81,7 +76,7 @@ function loadSavedSong() {
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
-  //document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songMetadata.length;
+  //document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length;
 
   audio.ontimeupdate = () => {
     document.getElementById("currentSongTime").innerHTML = calcFunctions.calcTime(audio.currentTime);
@@ -93,13 +88,9 @@ function loadSavedSong() {
   }
 
   audio.onended = () => {
-    if (index != musicList.length-1) {
-      playMusicItem(musicList[index+1], audio.src, index+1, songMetadata[index+1]);
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-      isMusicPlaying(false);
-    }
+    audio.pause();
+    audio.currentTime = 0;
+    isMusicPlaying(false);
   }
 
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
@@ -131,6 +122,7 @@ class RightColView extends Component {
       currentSong.changeCurrentSong = changeCurrentSong;
       loadSavedSong();
     }
+    console.log(config.store);
   }
 
   async componentDidMount() {
@@ -156,7 +148,7 @@ class RightColView extends Component {
   backButton(currentSongIndex) {
     if (audio.src != "") {
       if (currentSongIndex > 0) {
-        playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1, songMetadata[currentSongIndex-1]);
+        playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1, songsMetadata[currentSongIndex-1]);
       }
     }
   }
@@ -164,7 +156,7 @@ class RightColView extends Component {
   forwardButton(currentSongIndex) {
     if (audio.src != "") {
       if (currentSongIndex < musicList.length-1) {
-        playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1, songMetadata[currentSongIndex+1]);
+        playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1, songsMetadata[currentSongIndex+1]);
       }
     }
   }
