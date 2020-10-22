@@ -13,12 +13,9 @@ import * as filterFunctions from '../utils/filterFunctions';
 export var musicList = [];
 export var songMetadata = [];
 
-var currentPath = "";
+const dialog = require('electron').remote.dialog;
 
-const remote = require('electron').remote;
-const dialog = remote.dialog;
 const store = require('electron-store');
-
 const config = new store();
 
 const albumArt = require('album-art');
@@ -35,59 +32,39 @@ export async function goToFolder(mainFolder) {
     songMetadata = [];
 
 	document.getElementById("list").innerHTML = "";
-	await getItemsToMusicList(mainFolder, -1);
-
-	musicList.forEach((musicListItem, index) => {
-        var title = musicListItem.split('.').pop();
-        if (filterFunctions.isFileAcceptable(title)) {
-            //fs.js:854 Uncaught (in promise) Error: ENOTDIR: not a directory, scandir
-            getItemsToMusicList(musicListItem, index);
+    await getItemsToMusicList(mainFolder);
+     
+ 	musicList.forEach((musicListItem, index) => {
+        if (filterFunctions.isStringMusicFile(musicListItem.split('.').pop())) {
+            //Song
+            addToPlaylistAsSong(musicListItem);
+        } else {
+            //Folder
+            createListItem(false, false, musicListItem, index);
         }
     });
 
-	musicList.forEach((musicAlbumItem, index) => {
-		if (!Array.isArray(musicAlbumItem)) {
-            var title = musicAlbumItem.split('.').pop();
-            if (title != "jpg" && title != "png") {
-                addToPlaylistAsSong(musicAlbumItem);
+    config.set('currentSavedPlaylist', mainFolder);
+}
+
+async function getItemsToMusicList(folder) {
+    if (typeof folder === 'object') {
+        folder = folder.filePaths[0];
+    }
+
+    fs.readdirSync(folder).forEach((folderItem) => {
+        if (filterFunctions.isFileAcceptable(folderItem.split('.').pop())) {
+            if (folder.endsWith("\\")) {
+                musicList.push(folder + folderItem);
             } else {
-                musicList.splice(index, 1);
+                musicList.push(folder + "\\" + folderItem);
             }
-		} else {
-            createListItem(false, false, musicAlbumItem, index);
-		}
-    });
+        }
+    });	
 }
 
-async function getItemsToMusicList(folder, index) {
-    var count = 1;
-	if (index == -1) {
-		if(typeof folder === 'object'){
-			fs.readdirSync(folder.filePaths[0]).forEach((folderItem) => {
-                document.getElementById("notificationBar").innerHTML = count;
-                musicList.push(folder.filePaths[0] + "/" + folderItem);
-                count = count + 1;
-            });
-            config.set("currentSavedPlaylist", folder.filePaths[0]);
-		} else if (typeof folder === 'string') {
-			fs.readdirSync(folder).forEach((folderItem) => {
-				musicList.push(folder + "/" + folderItem);
-            });
-            config.set("currentSavedPlaylist", folder);
-		}
-	} else {
-		var musicArray = [];
-		musicArray.push(folder);
-		fs.readdirSync(folder).forEach((folderItem) => {
-			musicArray.push(folder + "/" + folderItem);
-		});
-		musicList[index] = musicArray;
-    }	
-}
-
-async function addToPlaylistAsSong(musicAlbumSong) {
-	var path = musicAlbumSong;
-	var readableStream = fs.createReadStream(musicAlbumSong);
+async function addToPlaylistAsSong(path) {
+	var readableStream = fs.createReadStream(path);
 	await mm(readableStream, async function (err, metadata) {
         if (err) throw err;
         songMetadata[metadata.track.no-1] = metadata;
@@ -98,7 +75,7 @@ async function addToPlaylistAsSong(musicAlbumSong) {
 
 function Uint8ArrayToJpgURL(arrayData) {
 	var arrayBufferView = new Uint8Array(arrayData);
-    var blob = new Blob( [arrayBufferView], { type: "image/jpeg" } );
+    var blob = new Blob([arrayBufferView], { type: "image/jpeg" });
     return URL.createObjectURL(blob);
 }
 
@@ -109,8 +86,9 @@ function getAlbumCoverOnline(artistName, albumName) {
     return promise;
 }
 
-async function createListItem(songData, path, musicAlbumArray, index) {
-    let imageUrl = "", artistSong = "", artistName = "", artistAlbum = "", order = "", title = "", cutStr = "";
+async function createListItem(songData, path, musicFolderPath, index) {
+    let imageUrl = "", artistSong = "", artistName = "", 
+        artistAlbum = "", order = "", title = "", cutStr = "";
 
     //listItem
     let musicAlbumItem = document.createElement("div");
@@ -124,8 +102,8 @@ async function createListItem(songData, path, musicAlbumArray, index) {
             imageUrl = await getAlbumCoverOnline(songData.artist[0], songData.album);
         }
 
-        currentPath = "";
-        var splitPath = path.split('/').filter(function (el) {
+        var currentPath = "";
+        var splitPath = path.split('\\').filter(function (el) {
             return el != "";
         });
 
@@ -147,18 +125,18 @@ async function createListItem(songData, path, musicAlbumArray, index) {
         artistName = songData.album;
     } else if (index > -1) {
         //Folder
-        currentPath = musicAlbumArray[0].split('/')[0];
-        title = musicAlbumArray[0].split('/').pop();
+        var folderPathSplit = musicFolderPath.split('\\');
+        title = folderPathSplit[folderPathSplit.length-1];
         cutStr = title.indexOf(" - ");
         if (cutStr != -1) {
             artistName = title.substring(0, cutStr);
-            artistAlbum = title.substring(cutStr+2, title.length);
+            artistAlbum = title.substring(cutStr+3, title.length);
         } else {
             artistAlbum = title;
         }
         order = index;
         musicAlbumItem.onclick = () => {
-            goToFolder(musicAlbumArray[0]);
+            goToFolder(musicFolderPath);
         }
     }
 
@@ -213,19 +191,24 @@ async function createListItem(songData, path, musicAlbumArray, index) {
 }
 
 function backFolder() {
-    var newPath = "";
-    var splitPath = currentPath.split('\\').filter(function (el) {
-        return el != "";
-    });
+    var pathToBackFrom = "", newPath = "", splitLength = "";
 
-    if (splitPath.length > 1) {
-        splitPath.forEach((element, index) => {
-            if (index <= splitPath.length-2) {
-                newPath += element + "\\";
+    if (typeof config.get('currentSavedPlaylist') === 'object') {
+        pathToBackFrom = config.get('currentSavedPlaylist').filePaths[0];
+    } else if (typeof config.get('currentSavedPlaylist') === 'string') {
+        pathToBackFrom = config.get('currentSavedPlaylist');
+    }
+
+    splitLength = pathToBackFrom.split('\\').slice(0, -1).length;
+
+    if (splitLength > 0) {
+        pathToBackFrom.split('\\').slice(0, -1).forEach((pathPart, index) => {
+            newPath += pathPart;
+            if (index < splitLength-1) {
+                newPath += "\\";
             }
         });
-        
-        goToFolder(newPath, -1);
+        goToFolder(newPath);
     }
 }
 

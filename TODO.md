@@ -38,13 +38,15 @@
 
 - [x] Catch isPlaying for RightColView when choosing song in LeftColView
 
+- [x] LeftColView.js - rebuild music folders/music item creations
+
 ===
 
+- [ ] RightColView.js - handle onEnded when playing track saved in config
+
+- [ ] LeftColView.js - Change album cover image generation (Uint8ArrayToJpgURL)
+
 - [ ] Code refactor #2
-
-- [ ] LeftColView.js - line 43 - bug on filtering
-
-- [ ] Change album cover image generation (Uint8ArrayToJpgURL)
 
 - [ ] Top menu redesign
 
