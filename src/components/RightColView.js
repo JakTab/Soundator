@@ -8,6 +8,7 @@ import './RightColView.scss';
 import * as calcFunctions from '../utils/calcFunctions';
 import audioController from '../utils/audioController';
 import { musicList, songsMetadata, goToFolder } from './LeftColView';
+import interact from 'interactjs';
 
 /* Globals */
 var config = new Store();
@@ -63,6 +64,24 @@ function loadSavedSong() {
 
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
 }
+
+interact('.info').resizable({
+  edges: { top: true },
+  listeners: {
+    move (event) {
+      event.target.style.height = event.rect.height + 'px'
+    }
+  },
+  modifiers: [
+    interact.modifiers.restrictEdges({
+      outer: 'parent'
+    }),
+    interact.modifiers.restrictSize({
+      min: { height: 250 }
+    })
+  ],
+  inertia: true
+});
 
 class RightColView extends Component {
   constructor(props) {
@@ -162,6 +181,10 @@ class RightColView extends Component {
     document.getElementById("rightColView").classList.toggle("decreaseRightCol");
   }
 
+  toggleBottomRowView() {
+    document.getElementById("info").classList.toggle("expandedInfo");
+  }
+
   volumeFillChange(vol) {
     document.getElementById("volumeFill").style.width = vol * 100 + "%";
     lastSavedVolume = vol;
@@ -175,7 +198,8 @@ class RightColView extends Component {
     return (
       <div id="rightColView" className="rightColView">
         <div className="album" id="albumArtwork" />
-        <div className="info">
+        <div id="info" className="info">
+          <div id="grabBar" onDoubleClick={() => this.toggleBottomRowView()} />
           <div className="progress-bar">
               <div className="time--current" id="currentSongTime">--:--</div>
               <div className="time--total" id="currentSongDuration">--:--</div>
@@ -189,13 +213,13 @@ class RightColView extends Component {
             <h3 className="album-name" />
           </div>
           <div className="controls">
-            <div className="option" onClick={() => this.toggleLeftColView()}><FontAwesomeIcon icon={faBars} /></div>
-            <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} /></div>
+            <div className="option" onClick={() => this.toggleLeftColView()}><FontAwesomeIcon icon={faBars} className="icon" /></div>
+            <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} className="icon" /></div>
             <div id="play" className="play" onClick={() => this.playButton()}>
-              <FontAwesomeIcon icon={faPlay} />
+              <FontAwesomeIcon icon={faPlay} className="icon" />
             </div>
-            <div className="next" onClick={() => this.forwardButton(currentSong.index)}><FontAwesomeIcon icon={faForward} /></div>
-            <div className="volume" onClick={() => this.muteUnmuteButton()}><FontAwesomeIcon icon={faVolumeUp} /></div>
+            <div className="next" onClick={() => this.forwardButton(currentSong.index)}><FontAwesomeIcon icon={faForward} className="icon" /></div>
+            <div className="volume" onClick={() => this.muteUnmuteButton()}><FontAwesomeIcon icon={faVolumeUp} className="icon" /></div>
             <div id="divVolumeFill" onClick={(e) => this.changeSongVolume(e)} onWheel={(e) => this.changeSongVolumeByBit(e)}>
               <div id="volumeFill" />
             </div>
@@ -203,6 +227,7 @@ class RightColView extends Component {
           <div className="currently-playing">
             <h3 className="song-number" />
           </div>
+          <div className="bottomRow"></div>
         </div>
       </div>
     )

@@ -14,6 +14,7 @@ function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		width: 800,
 		height: 843,
+		maximizable: false,
 		show: false,
 		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {

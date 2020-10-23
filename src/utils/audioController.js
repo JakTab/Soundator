@@ -43,17 +43,17 @@ class audioController {
     stopMusic() {
         this.audio.pause();
         this.audio.currentTime = 0;
-        ReactDOM.render(<FontAwesomeIcon icon={faPlay} />, document.getElementById('play'));
+        ReactDOM.render(<FontAwesomeIcon icon={faPlay} className="icon" />, document.getElementById('play'));
     }
 
     pauseMusic() {
         this.audio.pause();
-        ReactDOM.render(<FontAwesomeIcon icon={faPlay} />, document.getElementById('play'));
+        ReactDOM.render(<FontAwesomeIcon icon={faPlay} className="icon" />, document.getElementById('play'));
     }
 
     playMusic() {
         this.audio.play();
-        ReactDOM.render(<FontAwesomeIcon icon={faPause} />, document.getElementById('play'));
+        ReactDOM.render(<FontAwesomeIcon icon={faPause} className="icon" />, document.getElementById('play'));
     }
 
     setAudioSrc(src) {

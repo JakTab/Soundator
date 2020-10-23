@@ -40,13 +40,17 @@ $font: 'Questrial', sans-serif;
 }
 
 .info {
-  height: 40%;
+  height: 31%;
   width: 100%;
   position: absolute;
-  bottom:0;
+  bottom: 0;
   background: rgba($white, .85);
-  transform: translateY(35px);
-  transition: all .5s ease-in-out;
+  touch-action: none;
+  box-sizing: border-box;
+}
+
+.expandedInfo {
+  height: 100%;
 }
 
 .progress-bar {
@@ -61,13 +65,20 @@ $font: 'Questrial', sans-serif;
 #timeFill, #volumeFill {
   background-color: $secondary;
   width: 0%;
-  height: 0.3rem;
+  height: 0.6rem;
+  border-radius: 2px;
+}
+
+#grabBar {
+  background-color: $secondary;
+  width: 100%;
+  height: 0.6rem;
   border-radius: 2px;
 }
 
 .time--current, .time--total {
   color: $dark;
-  font-size: 10px;
+  font-size: 14px;
   position: absolute;
   margin-top: -2px;
 }
@@ -92,20 +103,20 @@ $font: 'Questrial', sans-serif;
 }
 
 .song-name {
-  font-size: .8em;
+  font-size: 1em;
   letter-spacing: 3px;
   color: $dark;
 }
 
 .artist-name {
-  font-size: .6em;
+  font-size: .8em;
   letter-spacing: 1.5px;
   color: lighten($dark, 15%);
   margin-top: 5px;
 }
 
 .album-name, .song-number {
-  font-size: .5em;
+  font-size: .6em;
   letter-spacing: 1.5px;
   color: lighten($dark, 15%);
   margin-top: 5px;
@@ -119,7 +130,6 @@ $font: 'Questrial', sans-serif;
   color: $secondary;
   .play, .pause {
     margin: 15px 25px;
-    color: darken($secondary, 10%);
   }
   .option {
     left: 30px;
@@ -140,10 +150,29 @@ $font: 'Questrial', sans-serif;
   }
 }
 
+#divTimeFill, #infoToggle {
+  height: 0.6rem;
+  background-color: $light;
+}
+
 #divVolumeFill {
-  height: 0.3rem;
+  height: 0.6rem;
   width: 100px;
   right: 30px;
   position: absolute;
-  background-color: bisque;
+  background-color: $light;
+}
+
+.icon {
+  font-size: 25px;
+}
+
+.bottomRow {
+  background-color: $secondary;
+  height: 65%;
+  margin-top: 5%;
+  margin-right: 20px;
+  margin-left: 20px;
+  margin-bottom: 1px;
+  border-radius: 5px;
 }

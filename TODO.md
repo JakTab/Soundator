@@ -42,11 +42,17 @@
 
 - [x] LeftColView.js - Change album cover image generation (Uint8ArrayToJpgURL)
 
+- [x] RightColView.js - handle onEnded when playing track saved in config
+
+- [x] Icon size change [ style={{ fontSize: "25px" }} ]
+
 ===
 
 - [ ] Code refactor #2
 
-- [ ] RightColView.js - handle onEnded when playing track saved in config
+- [ ] Move all leftColView to RightColView -> bottomRow
+
+- [ ] RightColView -> bottomRow redesign
 
 - [ ] Top menu redesign
 
