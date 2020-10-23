@@ -46,11 +46,11 @@
 
 - [x] Icon size change [ style={{ fontSize: "25px" }} ]
 
+- [x] Move all leftColView to RightColView -> bottomRow
+
 ===
 
 - [ ] Code refactor #2
-
-- [ ] Move all leftColView to RightColView -> bottomRow
 
 - [ ] RightColView -> bottomRow redesign
 

@@ -131,11 +131,6 @@ $font: 'Questrial', sans-serif;
   .play, .pause {
     margin: 15px 25px;
   }
-  .option {
-    left: 30px;
-    position: absolute;
-    font-size: .8em;
-  }
   .volume {
     right: 150px;
     position: absolute;
@@ -170,9 +165,9 @@ $font: 'Questrial', sans-serif;
 .bottomRow {
   background-color: $secondary;
   height: 65%;
-  margin-top: 5%;
+  margin-top: 4%;
   margin-right: 20px;
   margin-left: 20px;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   border-radius: 5px;
 }

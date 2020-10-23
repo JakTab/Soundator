@@ -8,16 +8,14 @@ $dark: #364F3C;
 $font: 'Questrial', sans-serif;
 
 .leftColView {
-  flex: 0;
-  background: $white;
-  position: relative;
-  margin: auto;
-  width: 0%;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 5px;
-  box-shadow: 5px 5px 15px rgba(black, .4);
-  transition: flex 1000ms ease;
+    background: #FFFFFF;
+    position: relative;
+    margin: auto;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 5px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+    transition: flex 1000ms ease;
 }
 
 #search {

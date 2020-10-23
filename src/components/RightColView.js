@@ -7,7 +7,7 @@ import * as Mousetrap from 'mousetrap';
 import './RightColView.scss';
 import * as calcFunctions from '../utils/calcFunctions';
 import audioController from '../utils/audioController';
-import { musicList, songsMetadata, goToFolder } from './LeftColView';
+import LeftColView, { musicList, songsMetadata, goToFolder } from './LeftColView';
 import interact from 'interactjs';
 
 /* Globals */
@@ -77,7 +77,7 @@ interact('.info').resizable({
       outer: 'parent'
     }),
     interact.modifiers.restrictSize({
-      min: { height: 250 }
+      min: { height: 843 * 0.31 }
     })
   ],
   inertia: true
@@ -213,7 +213,6 @@ class RightColView extends Component {
             <h3 className="album-name" />
           </div>
           <div className="controls">
-            <div className="option" onClick={() => this.toggleLeftColView()}><FontAwesomeIcon icon={faBars} className="icon" /></div>
             <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} className="icon" /></div>
             <div id="play" className="play" onClick={() => this.playButton()}>
               <FontAwesomeIcon icon={faPlay} className="icon" />
@@ -227,7 +226,9 @@ class RightColView extends Component {
           <div className="currently-playing">
             <h3 className="song-number" />
           </div>
-          <div className="bottomRow"></div>
+          <div className="bottomRow">
+            <LeftColView />
+          </div>
         </div>
       </div>
     )
