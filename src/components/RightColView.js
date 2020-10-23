@@ -52,7 +52,7 @@ export function playMusicItem(path, imageUrl, index, songData) {
 function loadSavedSong() {
   audio.stopMusic();
   audio.setAudioSrc(currentSong.path);
-  audio.setOnEnded(null);
+  audio.setOnEnded(currentSong.index);
 
   document.getElementById("volumeFill").style.width = (audio.getAudioVolume() * 100) + "%";
   lastSavedVolume = audio.getAudioVolume();
@@ -60,7 +60,7 @@ function loadSavedSong() {
   document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
   document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
-  //document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length;
+  document.getElementsByClassName("song-number")[0].innerHTML = currentSong.index+1 + "/" + musicList.length;
 
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
 }

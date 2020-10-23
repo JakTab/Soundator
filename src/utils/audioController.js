@@ -21,17 +21,11 @@ class audioController {
     }
 
     setOnEnded(index) {
-        if (index == null) {
-            this.audio.onended = () => {
+        this.audio.onended = () => {
+            if (index != musicList.length-1) {
+                playMusicItem(musicList[index+1], this.getAudioSrc(), index+1, songsMetadata[index+1]);
+            } else {
                 this.stopMusic();
-            }
-        } else {
-            this.audio.onended = () => {
-                if (index != musicList.length-1) {
-                    playMusicItem(musicList[index+1], this.getAudioSrc(), index+1, songsMetadata[index+1]);
-                } else {
-                    this.stopMusic();
-                }
             }
         }
     }
