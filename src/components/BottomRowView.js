@@ -57,11 +57,14 @@ async function getItemsToMusicList(folder) {
     }
 
     fs.readdirSync(folder).forEach((folderItem) => {
-        if (filterFunctions.isFileAcceptable(folderItem.split('.').pop())) {
-            if (folder.endsWith("\\")) {
-                musicList.push(folder + folderItem);
-            } else {
-                musicList.push(folder + "\\" + folderItem);
+        if (folder.endsWith("\\")) {
+            folderItem = folder + folderItem;
+        } else {
+            folderItem = folder + "\\" + folderItem;
+        }
+        if (!filterFunctions.folderNotPermitted(folderItem)) {
+            if (fs.statSync(folderItem).isDirectory() || filterFunctions.isStringMusicFile(folderItem.split('.').pop())) {
+                musicList.push(folderItem);
             }
         }
     });	

@@ -52,9 +52,9 @@
 
 - [x] Code refactor/cleanup #2
 
-===
+- [x] Streamline file filtering on folder loading
 
-- [ ] Streamline file filtering
+===
 
 - [ ] Top menu redesign
 
