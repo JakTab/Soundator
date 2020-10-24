@@ -4,17 +4,20 @@ $white: #FFFFFF;
 $light: #C0CFB2;
 $dark: #364F3C;
 
+@import url('https://fonts.googleapis.com/css?family=Questrial');
+$font: 'Questrial', sans-serif;
+
 * {
 	box-sizing: border-box;
 	user-select: none;
 }
 
 body, html {
-	font-family: Arial, Helvetica, sans-serif;
-	background-color: white;
-	padding: 0px;
+	font-family: $font;
+	background-color: $white;
 	height: 100%;
-  	margin: 0;
+	padding: 0;
+	margin: 0;
 }
 
 #root, .app {
@@ -22,30 +25,29 @@ body, html {
 }
 
 .app {
-	width: 100%;
+	width: 100vh;
 	height: 100vh;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	align-items: stretch;
-	background-color: black;
 }
 
 /* Scrollbar - width */
 ::-webkit-scrollbar {
-  width: 5px;
+	width: 5px;
 }
 
 /* Scrollbar - track */
 ::-webkit-scrollbar-track {
-  background: $light; 
+	background: $light; 
 }
  
 /* Scrollbar - handle */
 ::-webkit-scrollbar-thumb {
-  background: $secondary; 
+	background: $secondary; 
 }
 
 /* Scrollbar - handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: $primary;
+	background: $primary;
 }

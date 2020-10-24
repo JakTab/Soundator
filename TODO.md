@@ -50,9 +50,9 @@
 
 - [x] RightColView -> bottomRow redesign
 
-===
+- [x] Code refactor/cleanup #2
 
-- [ ] Code refactor #2
+===
 
 - [ ] Streamline file filtering
 
@@ -65,3 +65,5 @@
 - [ ] Folder navigation one level deeper
 
 - [ ] Search functionality within the scope of the currently active playlist (dynamic)
+
+- [ ] Code refactor/cleanup #3

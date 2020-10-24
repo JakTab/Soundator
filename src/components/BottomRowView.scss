@@ -7,8 +7,8 @@ $dark: #364F3C;
 @import url('https://fonts.googleapis.com/css?family=Questrial');
 $font: 'Questrial', sans-serif;
 
-.leftColView {
-    background: #FFFFFF;
+.bottomRowView {
+    background: $white;
     position: relative;
     margin: auto;
     height: 100%;
@@ -31,10 +31,15 @@ $font: 'Questrial', sans-serif;
     display: flex;
 }
 
-#notificationBar {
-    width: 50%;
+#folderControlBar div {
+    width: 150px;
     height: 100%;
-    background-color: green;
+    margin: 0 2px;
+    border: 3px solid $dark;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
 }
 
 #list {
@@ -100,17 +105,6 @@ $font: 'Questrial', sans-serif;
 .listItemInfo {
     width: 60%;
     margin: 40px 0 0 -60px;
-}
-
-#folderControlBar div {
-    width: 150px;
-    height: 100%;
-    margin: 0 2px;
-    border: 3px solid green;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
 }
 
 .menuIcon {

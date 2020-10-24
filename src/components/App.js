@@ -1,13 +1,13 @@
 import React from 'react';
 
-import RightColView from './RightColView';
+import MainView from './MainView';
 
 import './App.scss';
 
 const App = () => {
 	return (
 		<div className="app">
-			<RightColView />
+			<MainView />
 		</div>
 	)
 }

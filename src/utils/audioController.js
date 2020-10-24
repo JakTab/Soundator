@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import * as calcFunctions from './calcFunctions';
-import { musicList, songsMetadata } from '../components/LeftColView';
-import { playMusicItem } from '../components/RightColView';
+import { musicList, songsMetadata } from '../components/BottomRowView';
+import { playMusicItem } from '../components/MainView';
 
 class audioController {
     constructor() {
@@ -37,41 +37,41 @@ class audioController {
     stopMusic() {
         this.audio.pause();
         this.audio.currentTime = 0;
-        ReactDOM.render(<FontAwesomeIcon icon={faPlay} className="icon" />, document.getElementById('play'));
+        ReactDOM.render(<FontAwesomeIcon icon={faPlay} className="icon" />, document.getElementsByClassName('play')[0]);
     }
 
     pauseMusic() {
         this.audio.pause();
-        ReactDOM.render(<FontAwesomeIcon icon={faPlay} className="icon" />, document.getElementById('play'));
+        ReactDOM.render(<FontAwesomeIcon icon={faPlay} className="icon" />, document.getElementsByClassName('play')[0]);
     }
 
     playMusic() {
         this.audio.play();
-        ReactDOM.render(<FontAwesomeIcon icon={faPause} className="icon" />, document.getElementById('play'));
-    }
-
-    setAudioSrc(src) {
-        this.audio.src = src;
+        ReactDOM.render(<FontAwesomeIcon icon={faPause} className="icon" />, document.getElementsByClassName('play')[0]);
     }
 
     getAudioSrc() {
         return this.audio.src;
     }
 
-    setAudioVolume(volume) {
-        this.audio.volume = volume;
+    setAudioSrc(src) {
+        this.audio.src = src;
     }
 
     getAudioVolume() {
         return this.audio.volume;
     }
 
-    setCurrentTime(time) {
-        this.audio.currentTime = time;
+    setAudioVolume(volume) {
+        this.audio.volume = volume;
     }
 
     getCurrentTime() {
         return this.audio.currentTime;
+    }
+
+    setCurrentTime(time) {
+        this.audio.currentTime = time;
     }
 
     getAudioDuration() {

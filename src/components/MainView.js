@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeUp, faBackward, faPlay, faForward } from "@fortawesome/free-solid-svg-icons";
 import * as Store from 'electron-store';
 import * as Mousetrap from 'mousetrap';
-import './RightColView.scss';
+import './MainView.scss';
 import * as calcFunctions from '../utils/calcFunctions';
 import audioController from '../utils/audioController';
-import LeftColView, { musicList, songsMetadata, goToFolder } from './LeftColView';
+import BottomRowView, { musicList, songsMetadata, goToFolder } from './BottomRowView';
 import interact from 'interactjs';
 
 /* Globals */
@@ -27,7 +27,7 @@ function changeCurrentSong(index, title, artist, album, artwork, path) {
   this.path = path;
 }
 
-//
+/* Functions */
 export function playMusicItem(path, imageUrl, index, songData) {
   audio.stopMusic();
   audio.setAudioSrc(path);
@@ -43,7 +43,6 @@ export function playMusicItem(path, imageUrl, index, songData) {
   document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
   document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length;
 
-  console.log("Now playing: " + audio.getAudioSrc());
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
   audio.playMusic();
   config.set("currentSavedSong", currentSong);
@@ -83,7 +82,8 @@ interact('.info').resizable({
   inertia: true
 });
 
-class RightColView extends Component {
+/* Component class */
+class MainView extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -128,7 +128,7 @@ class RightColView extends Component {
       }
     }
   }
-  
+
   forwardButton(currentSongIndex) {
     if (audio.getAudioSrc() != "") {
       if (currentSongIndex < musicList.length-1) {
@@ -136,7 +136,7 @@ class RightColView extends Component {
       }
     }
   }
-  
+
   jumpToSongTime(event) {
     if (audio.getAudioSrc() != "") {
       var calculate = calcFunctions.calcDivFillPercentage(event, "TimeFill");
@@ -176,15 +176,6 @@ class RightColView extends Component {
     this.setState({ isMuted: !this.state.isMuted });
   }
 
-  toggleLeftColView() {
-    document.getElementById("leftColView").classList.toggle("showLeftCol");
-    document.getElementById("rightColView").classList.toggle("decreaseRightCol");
-  }
-
-  toggleBottomRowView() {
-    document.getElementById("info").classList.toggle("expandedInfo");
-  }
-
   volumeFillChange(vol) {
     document.getElementById("volumeFill").style.width = vol * 100 + "%";
     lastSavedVolume = vol;
@@ -196,16 +187,16 @@ class RightColView extends Component {
 
   render() {
     return (
-      <div id="rightColView" className="rightColView">
+      <div id="mainView" className="mainView">
         <div className="album" id="albumArtwork" />
         <div id="info" className="info">
-          <div id="grabBar" onDoubleClick={() => this.toggleBottomRowView()} />
+          <div className="grabBar" />
           <div className="progress-bar">
-              <div className="time--current" id="currentSongTime">--:--</div>
-              <div className="time--total" id="currentSongDuration">--:--</div>
-              <div id="divTimeFill" onClick={(e) => this.jumpToSongTime(e)}>
-                <div id="timeFill" />
-              </div>
+            <div className="time--current" id="currentSongTime">--:--</div>
+            <div className="time--total" id="currentSongDuration">--:--</div>
+            <div id="divTimeFill" onClick={(e) => this.jumpToSongTime(e)}>
+              <div id="timeFill" />
+            </div>
           </div>
           <div className="currently-playing">
             <h2 className="song-name" />
@@ -214,20 +205,18 @@ class RightColView extends Component {
           </div>
           <div className="controls">
             <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} className="icon" /></div>
-            <div id="play" className="play" onClick={() => this.playButton()}>
-              <FontAwesomeIcon icon={faPlay} className="icon" />
-            </div>
+            <div className="play" onClick={() => this.playButton()}><FontAwesomeIcon icon={faPlay} className="icon" /></div>
             <div className="next" onClick={() => this.forwardButton(currentSong.index)}><FontAwesomeIcon icon={faForward} className="icon" /></div>
             <div className="volume" onClick={() => this.muteUnmuteButton()}><FontAwesomeIcon icon={faVolumeUp} className="icon" /></div>
             <div id="divVolumeFill" onClick={(e) => this.changeSongVolume(e)} onWheel={(e) => this.changeSongVolumeByBit(e)}>
               <div id="volumeFill" />
             </div>
           </div>
-          <div className="currently-playing">
+          <div className="song-number-row">
             <h3 className="song-number" />
           </div>
           <div className="bottomRow">
-            <LeftColView />
+            <BottomRowView />
           </div>
         </div>
       </div>
@@ -235,4 +224,4 @@ class RightColView extends Component {
   }
 }
 
-export default RightColView;
+export default MainView;

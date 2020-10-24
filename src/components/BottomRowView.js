@@ -1,19 +1,18 @@
 /* Imports */
-import React from 'react';
+import React, { Component } from 'react';
 import fs from 'fs';
 import mm from 'musicmetadata';
 import * as byte64 from 'byte-base64';
 import ReactTooltip from 'react-tooltip';
 
-import './LeftColView.scss';
+import './BottomRowView.scss';
 
-import { playMusicItem } from './RightColView';
+import { playMusicItem } from './MainView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch } from '@fortawesome/free-solid-svg-icons';
 import * as filterFunctions from '../utils/filterFunctions';
 import * as calcFunctions from '../utils/calcFunctions';
-
 
 /* Globals */
 export var musicList = [];
@@ -23,6 +22,7 @@ const store = require('electron-store');
 const config = new store();
 const albumArt = require('album-art');
 
+/* Functions */
 async function getAllFolders() {
     let mainFolder = await dialog.showOpenDialog({ properties: ["openDirectory"] });
     console.log(mainFolder);
@@ -208,22 +208,29 @@ function backFolder() {
     }
 }
 
-const LeftColView = () => {
-    return (
-        <div id="leftColView" className="leftColView">
-            <ReactTooltip />
-            <div id="bottomOptionsBar">
-                <div id="folderControlBar">
-                    <div data-tip="Search in playlist"><FontAwesomeIcon icon={faSearch} className="icon menuIcon" /></div>
-                    <div data-tip="Back" onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" /></div>
-                    <div data-tip="Load folder to playlist" onClick={() => getAllFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" /></div>
-                    <div data-tip="Forward" onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" /></div>
-                    <div data-tip="Settings"><FontAwesomeIcon icon={faCog} className="icon menuIcon" /></div>
+/* Component class */
+class BottomRowView extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <div id="bottomRowView" className="bottomRowView">
+                <ReactTooltip />
+                <div id="bottomOptionsBar">
+                    <div id="folderControlBar">
+                        <div><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
+                        <div onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" data-tip="Back" /></div>
+                        <div onClick={() => getAllFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
+                        <div onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" data-tip="Forward" /></div>
+                        <div><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
+                    </div>
                 </div>
+                <div id="list" />
             </div>
-			<div id="list" />
-		</div>
-    )
+        )
+    }
 }
 
-export default LeftColView
+export default BottomRowView
