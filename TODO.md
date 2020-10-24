@@ -48,11 +48,13 @@
 
 - [x] Move all leftColView to RightColView -> bottomRow
 
+- [x] RightColView -> bottomRow redesign
+
 ===
 
 - [ ] Code refactor #2
 
-- [ ] RightColView -> bottomRow redesign
+- [ ] Streamline file filtering
 
 - [ ] Top menu redesign
 

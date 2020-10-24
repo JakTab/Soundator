@@ -1,30 +1,32 @@
+/* Imports */
 import React from 'react';
 import fs from 'fs';
 import mm from 'musicmetadata';
+import * as byte64 from 'byte-base64';
+import ReactTooltip from 'react-tooltip';
 
 import './LeftColView.scss';
 
 import { playMusicItem } from './RightColView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch } from '@fortawesome/free-solid-svg-icons';
 import * as filterFunctions from '../utils/filterFunctions';
+import * as calcFunctions from '../utils/calcFunctions';
 
-import * as byte64 from 'byte-base64';
 
+/* Globals */
 export var musicList = [];
 export var songsMetadata = [];
-
 const dialog = require('electron').remote.dialog;
-
 const store = require('electron-store');
 const config = new store();
-
 const albumArt = require('album-art');
 
 async function getAllFolders() {
     let mainFolder = await dialog.showOpenDialog({ properties: ["openDirectory"] });
-    if (!mainFolder.canceled) {
+    console.log(mainFolder);
+    if (!mainFolder.canceled && mainFolder.filePaths[0] != config.get('currentSavedPlaylist')) {
         goToFolder(mainFolder);
     }
 }
@@ -67,7 +69,7 @@ async function getItemsToMusicList(folder) {
 
 async function addToPlaylistAsSong(path) {
 	var readableStream = fs.createReadStream(path);
-	await mm(readableStream, async function (err, metadata) {
+	await mm(readableStream, { duration: true }, async function (err, metadata) {
         if (err) throw err;
         songsMetadata[metadata.track.no-1] = metadata;
         createListItem(metadata, path, false, false);
@@ -88,7 +90,7 @@ function getAlbumCoverOnline(artistName, albumName) {
 
 async function createListItem(songData, path, musicFolderPath, index) {
     let imageUrl = "", artistSong = "", artistName = "", 
-        artistAlbum = "", order = "", title = "", cutStr = "";
+        artistAlbum = "", trackLength = "", order = "", title = "", cutStr = "";
 
     //listItem
     let musicAlbumItem = document.createElement("div");
@@ -104,6 +106,9 @@ async function createListItem(songData, path, musicFolderPath, index) {
         artistSong = songData.track.no + ". " + songData.title;
         artistAlbum = songData.artist[0];
         artistName = songData.album;
+        if (!Number.isNaN(songData.duration)) {
+            trackLength = calcFunctions.calcTime(songData.duration);
+        }
         order = songData.track.no-1;
         musicAlbumItem.onclick = () => {
             playMusicItem(path, imageUrl, order, songData);
@@ -117,7 +122,8 @@ async function createListItem(songData, path, musicFolderPath, index) {
             artistName = title.substring(0, cutStr);
             artistAlbum = title.substring(cutStr+3, title.length);
         } else {
-            artistAlbum = title;
+            artistName = title;
+            artistAlbum = "";
         }
         order = index;
         musicAlbumItem.onclick = () => {
@@ -169,6 +175,11 @@ async function createListItem(songData, path, musicFolderPath, index) {
     albumName.innerHTML = artistAlbum;
     listItemInfo.appendChild(albumName);
 
+    var albumSongLength = document.createElement("h3");
+    albumSongLength.className = "listItem-song-length";
+    albumSongLength.innerHTML = trackLength;
+    listItemInfo.appendChild(albumSongLength);
+
 	musicAlbumItem.appendChild(albumCoverItem);
     musicAlbumItem.appendChild(listItemInfo);
     
@@ -200,15 +211,17 @@ function backFolder() {
 const LeftColView = () => {
     return (
         <div id="leftColView" className="leftColView">
-			<div id="search" onClick={() => getAllFolders()} />
-			<div id="list" />
+            <ReactTooltip />
             <div id="bottomOptionsBar">
                 <div id="folderControlBar">
-                    <div id="backFolderControlButton" onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} /></div>
-                    <div id="forwardFolderControlButton" onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} /></div>
+                    <div data-tip="Search in playlist"><FontAwesomeIcon icon={faSearch} className="icon menuIcon" /></div>
+                    <div data-tip="Back" onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" /></div>
+                    <div data-tip="Load folder to playlist" onClick={() => getAllFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" /></div>
+                    <div data-tip="Forward" onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" /></div>
+                    <div data-tip="Settings"><FontAwesomeIcon icon={faCog} className="icon menuIcon" /></div>
                 </div>
-                <div id="notificationBar" />
             </div>
+			<div id="list" />
 		</div>
     )
 }

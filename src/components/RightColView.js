@@ -1,7 +1,7 @@
 /* Imports */
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faVolumeUp, faBackward, faPlay, faForward } from "@fortawesome/free-solid-svg-icons";
+import { faVolumeUp, faBackward, faPlay, faForward } from "@fortawesome/free-solid-svg-icons";
 import * as Store from 'electron-store';
 import * as Mousetrap from 'mousetrap';
 import './RightColView.scss';
@@ -77,7 +77,7 @@ interact('.info').resizable({
       outer: 'parent'
     }),
     interact.modifiers.restrictSize({
-      min: { height: 843 * 0.31 }
+      min: { height: 235.19 }
     })
   ],
   inertia: true
