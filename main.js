@@ -22,7 +22,7 @@ function createMainWindow() {
 		show: false,
 		frame: isDev ? true : false,
 		//frame: false,
-		icon: `${__dirname}/assets/icon.png`,
+		icon: `${__dirname}/assets/icon.ico`,
 		webPreferences: {
 			nodeIntegration: true,
 			enableRemoteModule: true,

@@ -1,7 +1,7 @@
 {
   "name": "soundator",
   "productName": "Soundator",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Soundator is a minimalist-esque audio player",
   "author": "JakTab",
   "engines": {
@@ -17,9 +17,8 @@
     "prod": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --config=./webpack.dev.config.js --mode development",
     "build": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
-    "package": "npm run build",
-    "postpackage": "electron-packager ./ --out=./release-builds --overwrite",
-    "dist": "electron-builder"
+    "postpackage": "electron-packager ./ --out=./release-builds --overwrite --icon=./assets/icon.ico",
+    "packageBuild": "electron-builder"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
@@ -64,14 +63,15 @@
     "productName": "Soundator",
     "appId": "jaktab.Soundator",
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "icon": "/assets/icon.ico"
     },
     "portable": {
-      "artifactName": "Soundator_Portable.exe"
+      "artifactName": "Soundator_Portable_0.1.0.exe"
     },
     "directories": {
       "output": "release-builds",
-      "buildResources": "release-builds/buildRsources"
+      "buildResources": "release-builds/buildResources"
     }
   }
 }
