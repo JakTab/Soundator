@@ -69,6 +69,7 @@ interact('.info').resizable({
   listeners: {
     move (event) {
       event.target.style.height = event.rect.height + 'px'
+      document.getElementById('draggableArea').style.height = (800 - event.rect.height) + "px"
     }
   },
   modifiers: [
@@ -76,7 +77,7 @@ interact('.info').resizable({
       outer: 'parent'
     }),
     interact.modifiers.restrictSize({
-      min: { height: 235.19 }
+      min: { height: 240 }
     })
   ],
   inertia: true
@@ -188,7 +189,9 @@ class MainView extends Component {
   render() {
     return (
       <div id="mainView" className="mainView">
-        <div className="album" id="albumArtwork" />
+        <div className="album" id="albumArtwork">
+          <div id="draggableArea" className="draggableArea" />
+        </div>
         <div id="info" className="info">
           <div className="grabBar" />
           <div className="progress-bar">

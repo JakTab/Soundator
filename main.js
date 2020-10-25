@@ -21,6 +21,7 @@ function createMainWindow() {
 		maximizable: false,
 		show: false,
 		frame: isDev ? true : false,
+		//frame: false,
 		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {
 			nodeIntegration: true,
@@ -54,7 +55,7 @@ function createMainWindow() {
 	//Maintaining aspect ratio when resizing window
 	//Fix until Electron decides to implement this feature for Windows
 	let oldSize;
-	setInterval(() => {
+	aspectRatioInterval = setInterval(() => {
 		oldSize = mainWindow.getSize();
 	}, 10);
 
@@ -93,6 +94,7 @@ app.on('ready', createMainWindow);
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
+		clearInterval(aspectRatioInterval);
 		app.quit();
 	}
 })

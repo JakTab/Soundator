@@ -56,11 +56,13 @@
 
 - [x] Drag and drop on playlist
 
+- [x] Draggable frameless window
+
 ===
 
 - [ ] Top menu redesign - change to right-click menu
 
-- [ ] Draggable frameless window
+- [ ] Saving window size upon exiting
 
 - [ ] Item list ordering by disk number (multiple disk albums)
 
@@ -71,3 +73,7 @@
 - [ ] Search functionality within the scope of the currently active playlist (dynamic)
 
 - [ ] Code refactor/cleanup #3
+
+- [ ] Theming
+
+- [ ] Styles on resize screen
