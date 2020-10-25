@@ -13,9 +13,14 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		width: 800,
-		height: 843,
+		height: 800,
+		maxWidth: 900,
+		maxHeight: 900,
+		minWidth: 400,
+		minHeight: 400,
 		maximizable: false,
 		show: false,
+		frame: isDev ? true : false,
 		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {
 			nodeIntegration: true,
@@ -40,9 +45,28 @@ function createMainWindow() {
 			pathname: path.join(__dirname, 'dist', 'index.html'),
 			slashes: true,
 		})
+		mainWindow.removeMenu(false);
 	}
 
-	mainWindow.loadURL(indexPath)
+	mainWindow.removeMenu(false);
+	mainWindow.loadURL(indexPath);
+
+	//Maintaining aspect ratio when resizing window
+	//Fix until Electron decides to implement this feature for Windows
+	let oldSize;
+	setInterval(() => {
+		oldSize = mainWindow.getSize();
+	}, 10);
+
+	mainWindow.on('resize', () => {
+		let size = mainWindow.getSize();
+		let widthChanged = oldSize[0] != size[0];
+		var ratioY2X = 1;
+		if (widthChanged)
+			mainWindow.setSize(size[0], parseInt((size[0] * ratioY2X).toString()));
+		else
+			mainWindow.setSize(parseInt((size[1] / ratioY2X).toString()), size[1]);
+	});
 
 	// Don't show until we are ready and loaded
 	mainWindow.once('ready-to-show', () => {

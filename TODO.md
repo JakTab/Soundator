@@ -54,9 +54,13 @@
 
 - [x] Streamline file filtering on folder loading
 
+- [x] Drag and drop on playlist
+
 ===
 
-- [ ] Top menu redesign
+- [ ] Top menu redesign - change to right-click menu
+
+- [ ] Draggable frameless window
 
 - [ ] Item list ordering by disk number (multiple disk albums)
 

@@ -211,6 +211,35 @@ function backFolder() {
     }
 }
 
+function getDraggedFileData(event) {
+    event.preventDefault(); 
+    event.stopPropagation();
+    const draggedFilesObj = event.dataTransfer.files;
+    console.log(draggedFilesObj);
+    if (event.dataTransfer.files.length == 1) {
+        for (const [key, value] of Object.entries(draggedFilesObj)) {
+            if (value.type == "") {
+                goToFolder(value.path);
+            } else {
+                addToPlaylistAsSong(value.path);
+            }
+        }
+    }
+}
+
+function onDragOverList(event) {
+    event.preventDefault(); 
+    event.stopPropagation();
+}
+
+function onDragEnterList(event) {
+    event.preventDefault();  
+}
+
+function onDragLeaveList(event) {
+    event.preventDefault(); 
+}
+
 /* Component class */
 class BottomRowView extends Component {
     constructor(props) {
@@ -230,7 +259,7 @@ class BottomRowView extends Component {
                         <div><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
                     </div>
                 </div>
-                <div id="list" />
+                <div id="list" onDrop={(e) => getDraggedFileData(e)} onDragOver={(e) => onDragOverList(e)} onDragEnter={(e) => onDragEnterList(e)} onDragLeave={(e) => onDragLeaveList(e)}/>
             </div>
         )
     }
