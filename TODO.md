@@ -60,6 +60,8 @@
 
 - [x] Search functionality within the scope of the currently active playlist (dynamic)
 
+- [x] Settings view added
+
 ===
 
 - [ ] Top menu redesign - change to right-click menu
@@ -74,8 +76,8 @@
 
 - [ ] Code refactor/cleanup #3
 
-- [ ] Settings view
-
 - [ ] Theming
 
 - [ ] Styles on resize screen
+
+- [ ] Adding settings to settings view

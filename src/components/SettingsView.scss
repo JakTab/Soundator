@@ -1,0 +1,22 @@
+$primary: #49654D;
+$secondary: #8BA989;
+$white: #FFFFFF;
+$light: #C0CFB2;
+$dark: #364F3C;
+
+@import url('https://fonts.googleapis.com/css?family=Questrial');
+$font: 'Questrial', sans-serif;
+
+.settingsView {
+    width: 100%;
+    height: 90%;
+    background-color: $white;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    position: absolute;
+    top: 10%;
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}

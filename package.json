@@ -18,7 +18,7 @@
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --config=./webpack.dev.config.js --mode development",
     "build": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
     "postpackage": "electron-packager ./ --out=./release-builds --overwrite --icon=./assets/icon.ico",
-    "packageBuild": "electron-builder"
+    "packageBuild": "npm run build && electron-builder"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.15.1",

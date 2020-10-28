@@ -5,9 +5,14 @@ import mm from 'musicmetadata';
 import * as byte64 from 'byte-base64';
 import ReactTooltip from 'react-tooltip';
 
+import * as Store from 'electron-store';
+import * as albumArt from 'album-art';
+
 import './BottomRowView.scss';
 
 import { playMusicItem } from './MainView';
+
+import SettingsView, { checkIfSettingsOpen } from './SettingsView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -18,9 +23,7 @@ import * as calcFunctions from '../utils/calcFunctions';
 export var musicList = [];
 export var songsMetadata = [];
 const dialog = require('electron').remote.dialog;
-const store = require('electron-store');
-const config = new store();
-const albumArt = require('album-art');
+const config = new Store();
 
 /* Functions */
 async function getAllFolders() {
@@ -85,6 +88,7 @@ function Uint8ArrayToJpgURL(arrayData) {
     return "data:image/png;base64," + byte64.bytesToBase64(arrayData);
 }
 
+//TODO: action on reject and no album art found
 function getAlbumCoverOnline(artistName, albumName) {
     var promise = new Promise(function(resolve, reject) {
         resolve(albumArt(artistName, {album: albumName, size: 'medium'}));
@@ -242,7 +246,13 @@ function onDragLeaveList(event) {
 }
 
 function toggleSearch() {
-    document.getElementById("searchField").classList.toggle("hide");
+    if (checkIfSettingsOpen) {
+        document.getElementById("searchField").classList.toggle("hide");
+    }
+}
+
+function toggleSettings() {
+    document.getElementById("settingsView").classList.toggle("hide");
 }
 
 function searchThroughPlaylist(e) {
@@ -283,13 +293,14 @@ class BottomRowView extends Component {
                         <div onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" data-tip="Back" /></div>
                         <div onClick={() => getAllFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
                         <div onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" data-tip="Forward" /></div>
-                        <div><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
+                        <div onClick={() => toggleSettings()}><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
                     </div>
                 </div>
-                <div id="searchField" className="searchField hide">
+                <div id="searchField" className="searchField">
                     <input id="searchFieldInput" type="search" onChange={(e) => searchThroughPlaylist(e) }/>
                 </div>
                 <div id="list" onDrop={(e) => getDraggedFileData(e)} onDragOver={(e) => onDragOverList(e)} onDragEnter={(e) => onDragEnterList(e)} onDragLeave={(e) => onDragLeaveList(e)}/>
+                <SettingsView />
             </div>
         )
     }
