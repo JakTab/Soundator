@@ -32,6 +32,7 @@ async function getAllFolders() {
 }
 
 export async function goToFolder(mainFolder) {
+    cleanSearchFieldInput();
     musicList = [];
     songsMetadata = [];
 
@@ -240,6 +241,32 @@ function onDragLeaveList(event) {
     event.preventDefault(); 
 }
 
+function toggleSearch() {
+    document.getElementById("searchField").classList.toggle("hide");
+}
+
+function searchThroughPlaylist(e) {
+    var searchedValue = e.target.value.toLowerCase().trim();
+    document.getElementById("list").innerHTML = "";
+    musicList.forEach((musicItem, index) => {
+        var splitMusicItem = musicItem.split('\\');
+        if(splitMusicItem[splitMusicItem.length-1].toLowerCase().includes(searchedValue)) {
+            if (typeof songsMetadata[index] == 'undefined') {
+                //Folder
+                createListItem(false, false, musicItem, index);
+            } else {
+                //Song
+                addToPlaylistAsSong(musicItem);
+            }
+        }
+    })
+}
+
+function cleanSearchFieldInput() {
+    document.getElementById("searchFieldInput").value = "";
+    toggleSearch();
+}
+
 /* Component class */
 class BottomRowView extends Component {
     constructor(props) {
@@ -252,12 +279,15 @@ class BottomRowView extends Component {
                 <ReactTooltip />
                 <div id="bottomOptionsBar">
                     <div id="folderControlBar">
-                        <div><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
+                        <div onClick={() => toggleSearch()}><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
                         <div onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" data-tip="Back" /></div>
                         <div onClick={() => getAllFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
                         <div onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" data-tip="Forward" /></div>
                         <div><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
                     </div>
+                </div>
+                <div id="searchField" className="searchField hide">
+                    <input id="searchFieldInput" type="search" onChange={(e) => searchThroughPlaylist(e) }/>
                 </div>
                 <div id="list" onDrop={(e) => getDraggedFileData(e)} onDragOver={(e) => onDragOverList(e)} onDragEnter={(e) => onDragEnterList(e)} onDragLeave={(e) => onDragLeaveList(e)}/>
             </div>

@@ -58,6 +58,8 @@
 
 - [x] Draggable frameless window
 
+- [x] Search functionality within the scope of the currently active playlist (dynamic)
+
 ===
 
 - [ ] Top menu redesign - change to right-click menu
@@ -70,9 +72,9 @@
 
 - [ ] Folder navigation one level deeper
 
-- [ ] Search functionality within the scope of the currently active playlist (dynamic)
-
 - [ ] Code refactor/cleanup #3
+
+- [ ] Settings view
 
 - [ ] Theming
 
