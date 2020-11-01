@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css?family=Questrial');
+
+.theme-green {
+    --primary-color: #49654D;
+    --secondary-color: #8BA989;
+    --white-color: #FFFFFF;
+    --light-color: #C0CFB2;
+    --dark-color: #364F3C;
+    --shadow-box-color: rgba(0, 0, 0, 0.4);
+    --background-list-color: rgba(255, 255, 255, 0.85);
+    --background-listItem-color: rgba(255, 255, 255, 0.5);
+    --background-album: linear-gradient(rgba(54, 79, 60, 0.25), rgba(73, 101, 77, 0.55));
+    --font: 'Questrial';
+}
+
+.theme-yellow {
+    --primary-color: #656249;
+    --secondary-color: #A9A689;
+    --white-color: #FFFFFF;
+    --light-color: #CFCDB2;
+    --dark-color: #4F4F36;
+    --shadow-box-color: rgba(0, 0, 0, 0.4);
+    --background-list-color: rgba(255, 255, 255, 0.85);
+    --background-listItem-color: rgba(255, 255, 255, 0.5);
+    --background-album: linear-gradient(rgba(54, 79, 60, 0.25), rgba(79, 79, 54, 0.55));
+    --font: 'Questrial';
+}

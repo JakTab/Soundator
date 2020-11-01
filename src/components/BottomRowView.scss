@@ -1,21 +1,13 @@
-$primary: #49654D;
-$secondary: #8BA989;
-$white: #FFFFFF;
-$light: #C0CFB2;
-$dark: #364F3C;
-
-@import url('https://fonts.googleapis.com/css?family=Questrial');
-$font: 'Questrial', sans-serif;
-
 .bottomRowView {
-    background: $white;
+    background: var(--white-color);
     position: relative;
     margin: auto;
     height: 100%;
     overflow: hidden;
     border-radius: 5px;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 5px 5px 15px var(--shadow-box-color);
     transition: flex 1000ms ease;
+    font-family: var(--font);
 }
 
 #bottomOptionsBar {
@@ -27,7 +19,7 @@ $font: 'Questrial', sans-serif;
 #folderControlBar {
     width: 100%;
     height: 100%;
-    background-color: $secondary;
+    background-color: var(--secondary-color);
     display: flex;
 }
 
@@ -35,7 +27,7 @@ $font: 'Questrial', sans-serif;
     width: 150px;
     height: 100%;
     margin: 0 2px;
-    border: 3px solid $dark;
+    border: 3px solid var(--dark-color);
     text-align: center;
     align-items: center;
     justify-content: center;
@@ -45,7 +37,7 @@ $font: 'Questrial', sans-serif;
 #list {
 	width: 100%;
     height: 90%;
-	background-color: rgba($white, .85);
+	background-color: var(--background-list-color);
 	overflow: scroll;
 	overflow-x: hidden;
 	display: flex;
@@ -56,12 +48,12 @@ $font: 'Questrial', sans-serif;
 #listItem {
 	width: 100%;
 	height: 140px;
-	background-color: rgba($white, .50);
+	background-color:var(--background-listItem-color);
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
     border-bottom: 3px solid black;
-    box-shadow: 5px 5px 15px rgba(black, .4);
+    box-shadow: 5px 5px 15px var(--shadow-box-color);
     top: 5px;
 }
 
@@ -76,7 +68,7 @@ $font: 'Questrial', sans-serif;
 }
 
 .listItem-song-name, .listItem-artist-name, .listItem-album-name, .listItem-song-length {
-    font-family: $font;
+    font-family: var(--font);
     text-transform: uppercase;
     margin: 0;
     width: 70%;
@@ -85,20 +77,20 @@ $font: 'Questrial', sans-serif;
 .listItem-song-name {
     font-size: 1em;
     letter-spacing: 3px;
-    color: $dark;
+    color: var(--dark-color);
 }
   
 .listItem-artist-name {
     font-size: .8em;
     letter-spacing: 1.5px;
-    color: lighten($dark, 15%);
+    color: var(--dark-color);
     margin-top: 5px;
 }
   
 .listItem-album-name, .listItem-song-length {
     font-size: .7em;
     letter-spacing: 1.5px;
-    color: lighten($dark, 15%);
+    color: var(--dark-color);
     margin-top: 5px;
 }
 
@@ -115,14 +107,14 @@ $font: 'Questrial', sans-serif;
 .searchField {
     height: 10%;
     width: 100%;
-    background-color: #8BA989;
+    background-color: var(--secondary-color);
     display: flex;
 }
 
 .searchField input {
     width: 100%;
     margin: 10px;
-    font-family: $font;
+    font-family: var(--font);
 }
 
 .hide {

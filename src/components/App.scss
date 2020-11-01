@@ -1,30 +1,21 @@
-$primary: #49654D;
-$secondary: #8BA989;
-$white: #FFFFFF;
-$light: #C0CFB2;
-$dark: #364F3C;
-
-@import url('https://fonts.googleapis.com/css?family=Questrial');
-$font: 'Questrial', sans-serif;
-
 * {
 	box-sizing: border-box;
 	user-select: none;
 }
 
 body, html {
-	font-family: $font;
-	background-color: $white;
+	font-family: var(--font);
+	background-color: var(--white-color);
 	height: 100%;
 	padding: 0;
 	margin: 0;
 }
 
-#root, .app {
+#root, #app {
 	display: flex;
 }
 
-.app {
+#app {
 	width: 100vh;
 	height: 100vh;
 	flex-direction: row;
@@ -39,15 +30,15 @@ body, html {
 
 /* Scrollbar - track */
 ::-webkit-scrollbar-track {
-	background: $light; 
+	background: var(--light-color); 
 }
  
 /* Scrollbar - handle */
 ::-webkit-scrollbar-thumb {
-	background: $secondary; 
+	background: var(--secondary-color); 
 }
 
 /* Scrollbar - handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: $primary;
+	background: var(--primary-color);
 }

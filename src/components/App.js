@@ -2,11 +2,12 @@ import React from 'react';
 
 import MainView from './MainView';
 
+import '../themes/Themes.scss';
 import './App.scss';
 
 const App = () => {
 	return (
-		<div className="app">
+		<div id="app" className="theme-green">
 			<MainView />
 		</div>
 	)
