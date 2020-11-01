@@ -62,9 +62,13 @@
 
 - [x] Settings view added
 
+- [x] Top menu redesign - change to right-click menu
+
+- [x] Basic theme management + saving themes
+
 ===
 
-- [ ] Top menu redesign - change to right-click menu
+- [ ] Code refactor/cleanup #3
 
 - [ ] Saving window size upon exiting
 
@@ -74,10 +78,10 @@
 
 - [ ] Folder navigation one level deeper
 
-- [ ] Code refactor/cleanup #3
-
-- [ ] Theming
+- [ ] Create themes
 
 - [ ] Styles on resize screen
 
 - [ ] Adding settings to settings view
+
+- [ ] Splash screen? - https://dev.to/montoyaaguirre/adding-a-splash-screen-to-portable-electron-builder-apps-34d3

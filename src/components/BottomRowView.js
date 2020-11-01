@@ -245,9 +245,15 @@ function onDragLeaveList(event) {
     event.preventDefault(); 
 }
 
-function toggleSearch() {
-    if (checkIfSettingsOpen) {
-        document.getElementById("searchField").classList.toggle("hide");
+function toggleSearch(clickedButton) {
+    if (clickedButton) {
+        if (checkIfSettingsOpen) {
+            document.getElementById("searchField").classList.toggle("hide");
+        }
+    } else {
+        if (!document.getElementById("searchField").classList.value.includes("hide")) {
+            document.getElementById("searchField").classList.toggle("hide"); 
+        }
     }
 }
 
@@ -274,7 +280,7 @@ function searchThroughPlaylist(e) {
 
 function cleanSearchFieldInput() {
     document.getElementById("searchFieldInput").value = "";
-    toggleSearch();
+    toggleSearch(false);
 }
 
 /* Component class */
@@ -289,7 +295,7 @@ class BottomRowView extends Component {
                 <ReactTooltip />
                 <div id="bottomOptionsBar">
                     <div id="folderControlBar">
-                        <div onClick={() => toggleSearch()}><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
+                        <div onClick={() => toggleSearch(true)}><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
                         <div onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" data-tip="Back" /></div>
                         <div onClick={() => getAllFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
                         <div onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" data-tip="Forward" /></div>

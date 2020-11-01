@@ -101,6 +101,9 @@ class MainView extends Component {
       currentSong.changeCurrentSong = changeCurrentSong;
       loadSavedSong();
     }
+    if (config.get('currentAppTheme') != undefined) {
+      document.getElementById('app').className = config.get('currentAppTheme');
+    }
     //console.log("config.store: " + config.store);
   }
 
