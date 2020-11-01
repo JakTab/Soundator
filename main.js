@@ -1,6 +1,10 @@
 const path = require('path');
 const url = require('url');
 const { app, BrowserWindow, protocol } = require('electron');
+const electron = require('electron');
+
+const Menu = electron.Menu;
+const MenuItem = electron.MenuItem;
 
 let mainWindow;
 
@@ -90,7 +94,17 @@ function createMainWindow() {
 	mainWindow.on('closed', () => (mainWindow = null))
 }
 
-app.on('ready', createMainWindow);
+app.on('ready', () => {
+	createMainWindow();
+
+	const ctxMenu = new Menu();
+	ctxMenu.append(new MenuItem({ role: 'minimize' }));
+	ctxMenu.append(new MenuItem({ role: 'close' }));
+
+	mainWindow.webContents.on('context-menu', (e, params) => {
+		ctxMenu.popup(mainWindow, params.x, params.y);
+	});
+});
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
