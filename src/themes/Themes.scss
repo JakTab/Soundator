@@ -25,3 +25,16 @@
     --background-album: linear-gradient(rgba(54, 79, 60, 0.25), rgba(79, 79, 54, 0.55));
     --font: 'Questrial';
 }
+
+.theme-red {
+    --primary-color: #654949;
+    --secondary-color: #A98989;
+    --white-color: #FFFFFF;
+    --light-color: #CFB2B2;
+    --dark-color: #4F3636;
+    --shadow-box-color: rgba(0, 0, 0, 0.4);
+    --background-list-color: rgba(255, 255, 255, 0.85);
+    --background-listItem-color: rgba(255, 255, 255, 0.5);
+    --background-album: linear-gradient(rgba(79, 54, 54, 0.25), rgba(79, 54, 54, 0.55));
+    --font: 'Questrial';
+}

@@ -5,7 +5,7 @@ export function calcTime(time) {
 }
 
 export function calcProgressBar(audio) {
-	return "" + (audio.currentTime / audio.duration)*100 + "%";
+	return "" + (audio.currentTime / audio.duration) * 100 + "%";
 }
 
 export function calcDivFillPercentage(event, fillingElementId) {

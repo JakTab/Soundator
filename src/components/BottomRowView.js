@@ -5,30 +5,31 @@ import mm from 'musicmetadata';
 import * as byte64 from 'byte-base64';
 import ReactTooltip from 'react-tooltip';
 
-import * as Store from 'electron-store';
 import * as albumArt from 'album-art';
 
 import './BottomRowView.scss';
 
 import { playMusicItem } from './MainView';
-
-import SettingsView, { checkIfSettingsOpen } from './SettingsView';
+import SettingsView from './SettingsView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch } from '@fortawesome/free-solid-svg-icons';
+
 import * as filterFunctions from '../utils/filterFunctions';
 import * as calcFunctions from '../utils/calcFunctions';
+import * as documentFunctions from '../utils/documentFunctions';
+
+import configController from '../utils/configController';
 
 /* Globals */
 export var musicList = [];
 export var songsMetadata = [];
 const dialog = require('electron').remote.dialog;
-const config = new Store();
+const config = new configController();
 
 /* Functions */
-async function getAllFolders() {
+async function getFolders() {
     let mainFolder = await dialog.showOpenDialog({ properties: ["openDirectory"] });
-    console.log(mainFolder);
     if (!mainFolder.canceled && mainFolder.filePaths[0] != config.get('currentSavedPlaylist')) {
         goToFolder(mainFolder);
     }
@@ -39,7 +40,7 @@ export async function goToFolder(mainFolder) {
     musicList = [];
     songsMetadata = [];
 
-	document.getElementById("list").innerHTML = "";
+    documentFunctions.setInnerHTML('id', 'list', '');
     await getItemsToMusicList(mainFolder);
      
  	musicList.forEach((musicListItem, index) => {
@@ -66,6 +67,7 @@ async function getItemsToMusicList(folder) {
         } else {
             folderItem = folder + "\\" + folderItem;
         }
+
         if (!filterFunctions.folderNotPermitted(folderItem)) {
             if (fs.statSync(folderItem).isDirectory() || filterFunctions.isStringMusicFile(folderItem.split('.').pop())) {
                 musicList.push(folderItem);
@@ -100,11 +102,12 @@ async function createListItem(songData, path, musicFolderPath, index) {
     let imageUrl = "", artistSong = "", artistName = "", 
         artistAlbum = "", trackLength = "", order = "", title = "", cutStr = "";
 
-    //listItem
-    let musicAlbumItem = document.createElement("div");
-    musicAlbumItem.id = "listItem";
+    let isFolder = songData != false ? false : true;
 
-    if (songData != false) {
+    //listItem
+    let musicAlbumItem = documentFunctions.generateElement('div', 'listItem', '');
+
+    if (!isFolder) {
         //Song
         if (typeof songData.picture[0] != 'undefined') {
             imageUrl = Uint8ArrayToJpgURL(songData.picture[0].data);
@@ -119,9 +122,9 @@ async function createListItem(songData, path, musicFolderPath, index) {
         }
         order = songData.track.no-1;
         musicAlbumItem.onclick = () => {
-            playMusicItem(path, imageUrl, order, songData);
+            playMusicItem(path, imageUrl, order, songData, true);
         }
-    } else if (index > -1) {
+    } else {
         //Folder
         var folderPathSplit = musicFolderPath.split('\\');
         title = folderPathSplit[folderPathSplit.length-1];
@@ -142,50 +145,42 @@ async function createListItem(songData, path, musicFolderPath, index) {
     musicAlbumItem.style.order = order;
 
     //listItemIng
-    let albumCoverItem = document.createElement("div");
-    albumCoverItem.id = "listItemImg";
+    let albumCoverItem = documentFunctions.generateElement('div', 'listItemImg', '');
 
     if (imageUrl != "") {
-        let albumCoverImg = document.createElement("img");
+        let albumCoverImg = documentFunctions.generateElement('img', '', '');
         albumCoverImg.src = imageUrl;
         albumCoverItem.appendChild(albumCoverImg);
     }
 
     //listItemInfo
-    let listItemInfo = document.createElement("div");
-    listItemInfo.className = "listItemInfo";
+    let listItemInfo = documentFunctions.generateElement('div', '', 'listItemInfo');
 
     var albumSong = "", albumArtist = "", albumName = "";
 
-    if (artistSong != "" && artistSong != undefined) {
+    if (!isFolder) {
         //Song
-        albumSong = document.createElement("h2");
-        albumSong.className = "listItem-song-name";
-        albumSong.innerHTML = artistSong;
+        albumSong = documentFunctions.generateElement('h2', '', 'listItem-song-name');
+        documentFunctions.setInnerHTMLToObject(albumSong, artistSong);
         listItemInfo.appendChild(albumSong);
     } 
 
-    if (artistSong == "") {
+    if (isFolder) {
         //Folder
-        albumArtist = document.createElement("h2");
-        albumArtist.className = "listItem-song-name";
+        albumArtist = documentFunctions.generateElement('h2', '', 'listItem-folder-name');
     } else {
         //Song
-        albumArtist = document.createElement("h3");
-        albumArtist.className = "listItem-artist-name";
+        albumArtist = documentFunctions.generateElement('h3', '', 'listItem-artist-name');
     }
-    
-    albumArtist.innerHTML = artistName;
+    documentFunctions.setInnerHTMLToObject(albumArtist, artistName);
     listItemInfo.appendChild(albumArtist);
 
-    albumName = document.createElement("h3");
-    albumName.className = "listItem-album-name";
-    albumName.innerHTML = artistAlbum;
+    albumName = documentFunctions.generateElement('h3', '', 'listItem-album-name');
+    documentFunctions.setInnerHTMLToObject(albumName, artistAlbum);
     listItemInfo.appendChild(albumName);
 
-    var albumSongLength = document.createElement("h3");
-    albumSongLength.className = "listItem-song-length";
-    albumSongLength.innerHTML = trackLength;
+    var albumSongLength = documentFunctions.generateElement('h3', '', 'listItem-song-length');
+    documentFunctions.setInnerHTMLToObject(albumSongLength, trackLength);
     listItemInfo.appendChild(albumSongLength);
 
 	musicAlbumItem.appendChild(albumCoverItem);
@@ -197,11 +192,7 @@ async function createListItem(songData, path, musicFolderPath, index) {
 function backFolder() {
     var pathToBackFrom = "", newPath = "", splitLength = "";
 
-    if (typeof config.get('currentSavedPlaylist') === 'object') {
-        pathToBackFrom = config.get('currentSavedPlaylist').filePaths[0];
-    } else if (typeof config.get('currentSavedPlaylist') === 'string') {
-        pathToBackFrom = config.get('currentSavedPlaylist');
-    }
+    pathToBackFrom = config.checkIfObjectOrString('currentSavedPlaylist');
 
     splitLength = pathToBackFrom.split('\\').slice(0, -1).length;
 
@@ -220,7 +211,6 @@ function getDraggedFileData(event) {
     event.preventDefault(); 
     event.stopPropagation();
     const draggedFilesObj = event.dataTransfer.files;
-    console.log(draggedFilesObj);
     if (event.dataTransfer.files.length == 1) {
         for (const [key, value] of Object.entries(draggedFilesObj)) {
             if (value.type == "") {
@@ -246,24 +236,18 @@ function onDragLeaveList(event) {
 }
 
 function toggleSearch(clickedButton) {
-    if (clickedButton) {
-        if (checkIfSettingsOpen) {
-            document.getElementById("searchField").classList.toggle("hide");
-        }
-    } else {
-        if (!document.getElementById("searchField").classList.value.includes("hide")) {
-            document.getElementById("searchField").classList.toggle("hide"); 
-        }
+    if (clickedButton || (!clickedButton && !documentFunctions.includesClass('searchField', 'hide'))) {
+        documentFunctions.toggleClass('searchField', 'hide');
     }
 }
 
 function toggleSettings() {
-    document.getElementById("settingsView").classList.toggle("hide");
+    documentFunctions.toggleClass('settingsView', 'hide');
 }
 
 function searchThroughPlaylist(e) {
     var searchedValue = e.target.value.toLowerCase().trim();
-    document.getElementById("list").innerHTML = "";
+    documentFunctions.setInnerHTML('id', 'list', '');
     musicList.forEach((musicItem, index) => {
         var splitMusicItem = musicItem.split('\\');
         if(splitMusicItem[splitMusicItem.length-1].toLowerCase().includes(searchedValue)) {
@@ -279,7 +263,7 @@ function searchThroughPlaylist(e) {
 }
 
 function cleanSearchFieldInput() {
-    document.getElementById("searchFieldInput").value = "";
+    documentFunctions.setValue('id', 'searchFieldInput', '');
     toggleSearch(false);
 }
 
@@ -297,7 +281,7 @@ class BottomRowView extends Component {
                     <div id="folderControlBar">
                         <div onClick={() => toggleSearch(true)}><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
                         <div onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" data-tip="Back" /></div>
-                        <div onClick={() => getAllFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
+                        <div onClick={() => getFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
                         <div onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" data-tip="Forward" /></div>
                         <div onClick={() => toggleSettings()}><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
                     </div>
@@ -305,7 +289,7 @@ class BottomRowView extends Component {
                 <div id="searchField" className="searchField">
                     <input id="searchFieldInput" type="search" onChange={(e) => searchThroughPlaylist(e) }/>
                 </div>
-                <div id="list" onDrop={(e) => getDraggedFileData(e)} onDragOver={(e) => onDragOverList(e)} onDragEnter={(e) => onDragEnterList(e)} onDragLeave={(e) => onDragLeaveList(e)}/>
+                <div id="list" onDrop={(e) => getDraggedFileData(e)} onDragOver={(e) => onDragOverList(e)} onDragEnter={(e) => onDragEnterList(e)} onDragLeave={(e) => onDragLeaveList(e)} />
                 <SettingsView />
             </div>
         )

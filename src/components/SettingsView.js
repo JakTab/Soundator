@@ -1,17 +1,29 @@
+/* Imports */
 import React, { Component } from 'react';
-import * as Store from 'electron-store';
 
 import './SettingsView.scss';
 
-var config = new Store();
+import configController from '../utils/configController';
 
-export function checkIfSettingsOpen() {
-    return !document.getElementById("settingsView").classList.value.includes('hide')
+/* Globals */
+var config = new configController();
+
+var themes = [
+    { 'value': 'theme-green', 'name': 'Green', 'color': '#49654D' },
+    { 'value': 'theme-yellow', 'name': 'Yellow', 'color': '#656249' },
+    { 'value': 'theme-red', 'name': 'Red', 'color': '#654949' },
+];
+
+/* Functions */
+function toggleAppTheme(event) {
+    event.persist();
+    document.getElementById('app').className = event.target.value;
+    config.set('currentAppTheme', event.target.value);
 }
 
-function toggleAppTheme(themeName) {
-    document.getElementById('app').className = themeName;
-    config.set('currentAppTheme', themeName);
+function clearConfig() {
+    config.clear();
+    require('electron').remote.app.quit();
 }
 
 class SettingsView extends Component {
@@ -22,8 +34,20 @@ class SettingsView extends Component {
     render() {
         return (
             <div id="settingsView" className="settingsView hide">
-                <div onClick={() => toggleAppTheme('theme-green')} style={{height: '100px', width: '100px', backgroundColor: 'green'}}></div>
-                <div onClick={() => toggleAppTheme('theme-yellow')} style={{height: '100px', width: '100px', backgroundColor: 'yellow'}}></div>
+                <div>
+                    <div className="settingContainer">
+                        <p>Application theme: </p>
+                        <select onChange={(e) => toggleAppTheme(e)}>
+                            {themes.map(team => (
+                                <option style={{backgroundColor: team.color}} key={team.value} value={team.value}>{team.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="settingContainer">
+                        <p>Clear configuration: </p>
+                        <button onClick={() => clearConfig()}>Erase config data</button>
+                    </div>
+                </div>
             </div>
         );
     }

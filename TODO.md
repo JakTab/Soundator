@@ -66,9 +66,9 @@
 
 - [x] Basic theme management + saving themes
 
-===
+- [x] Code refactor/cleanup #3
 
-- [ ] Code refactor/cleanup #3
+===
 
 - [ ] Saving window size upon exiting
 
@@ -82,6 +82,4 @@
 
 - [ ] Styles on resize screen
 
-- [ ] Adding settings to settings view
-
-- [ ] Splash screen? - https://dev.to/montoyaaguirre/adding-a-splash-screen-to-portable-electron-builder-apps-34d3
+- [ ] Adding settings to settings view (clean saved data; change theme)

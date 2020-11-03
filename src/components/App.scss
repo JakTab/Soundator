@@ -23,22 +23,32 @@ body, html {
 	align-items: stretch;
 }
 
-/* Scrollbar - width */
+/* Scrollbar */
 ::-webkit-scrollbar {
 	width: 5px;
 }
 
-/* Scrollbar - track */
 ::-webkit-scrollbar-track {
 	background: var(--light-color); 
 }
  
-/* Scrollbar - handle */
 ::-webkit-scrollbar-thumb {
 	background: var(--secondary-color); 
 }
 
-/* Scrollbar - handle on hover */
 ::-webkit-scrollbar-thumb:hover {
 	background: var(--primary-color);
+}
+
+/* Global hide */
+.hide {
+    visibility: hidden;
+    width: 0;
+    height: 0;
+    display: flex;
+}
+
+/* Global icon class */
+.icon {
+	font-size: 25px;
 }

@@ -1,87 +1,60 @@
 /* Imports */
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVolumeUp, faBackward, faPlay, faForward } from "@fortawesome/free-solid-svg-icons";
-import * as Store from 'electron-store';
+import { faVolumeUp, faBackward, faPlay, faForward, faAngleDoubleDown, faAngleDoubleUp } from "@fortawesome/free-solid-svg-icons";
 import * as Mousetrap from 'mousetrap';
 import './MainView.scss';
 import * as calcFunctions from '../utils/calcFunctions';
 import audioController from '../utils/audioController';
 import BottomRowView, { musicList, songsMetadata, goToFolder } from './BottomRowView';
-import interact from 'interactjs';
+
+import configController from '../utils/configController';
+
+import * as documentFunctions from '../utils/documentFunctions';
 
 /* Globals */
-var config = new Store();
+var config = new configController();
 var audio = new audioController();
 var lastSavedVolume;
+var toggledBottomView = false;
 
-export var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "" };
+export var currentSong = { "index": "", "title": "",	"artist": "",	"album": "", "artwork": "", "path": "", "songData": "" };
 currentSong.changeCurrentSong = changeCurrentSong;
 
-function changeCurrentSong(index, title, artist, album, artwork, path) {
+/* Functions */
+function changeCurrentSong(index, title, artist, album, artwork, path, songData) {
   this.index = index;
   this.title = title;
   this.artist = artist;
   this.album = album;
   this.artwork = artwork;
   this.path = path;
+  this.songData = songData;
 }
 
-/* Functions */
-export function playMusicItem(path, imageUrl, index, songData) {
+export function playMusicItem(path, imageUrl, index, songData, playbackOn) {
   audio.stopMusic();
   audio.setAudioSrc(path);
   audio.setOnEnded(index);
 
-  document.getElementById("volumeFill").style.width = (audio.getAudioVolume() * 100) + "%";
+  documentFunctions.setElementsWidth('volumeFill', (audio.getAudioVolume() * 100) + "%");
   lastSavedVolume = audio.getAudioVolume();
 
-  currentSong.changeCurrentSong(index, songData.title, songData.artist[0], songData.album, imageUrl, audio.getAudioSrc());
-
-  document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
-  document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
-  document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
-  document.getElementsByClassName("song-number")[0].innerHTML = (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length;
-
-  document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
-  audio.playMusic();
+  currentSong.changeCurrentSong(index, songData.title, songData.artist[0], songData.album, imageUrl, audio.getAudioSrc(), songData);
   config.set("currentSavedSong", currentSong);
-}
 
-function loadSavedSong() {
-  audio.stopMusic();
-  audio.setAudioSrc(currentSong.path);
-  audio.setOnEnded(currentSong.index);
-
-  document.getElementById("volumeFill").style.width = (audio.getAudioVolume() * 100) + "%";
-  lastSavedVolume = audio.getAudioVolume();
-
-  document.getElementsByClassName("song-name")[0].innerHTML = currentSong.title;
-  document.getElementsByClassName("artist-name")[0].innerHTML = currentSong.artist;
-  document.getElementsByClassName("album-name")[0].innerHTML = currentSong.album;
-  document.getElementsByClassName("song-number")[0].innerHTML = currentSong.index+1 + "/" + musicList.length;
+  documentFunctions.setInnerHTML('class', 'song-name', currentSong.title);
+  documentFunctions.setInnerHTML('class', 'artist-name', currentSong.artist);
+  documentFunctions.setInnerHTML('class', 'album-name', currentSong.album);
+  documentFunctions.setInnerHTML('class', 'song-number', (songData.track.of != 0) ? songData.track.no + "/" + songData.track.of : songData.track.no + "/" + songsMetadata.length);
 
   document.getElementById("albumArtwork").style.backgroundImage = "url(" + currentSong.artwork + ")";
-}
 
-interact('.info').resizable({
-  edges: { top: true },
-  listeners: {
-    move (event) {
-      event.target.style.height = event.rect.height + 'px'
-      document.getElementById('draggableArea').style.height = (800 - event.rect.height) + "px"
-    }
-  },
-  modifiers: [
-    interact.modifiers.restrictEdges({
-      outer: 'parent'
-    }),
-    interact.modifiers.restrictSize({
-      min: { height: 240 }
-    })
-  ],
-  inertia: true
-});
+  if (playbackOn) {
+    audio.playMusic();
+  }
+}
 
 /* Component class */
 class MainView extends Component {
@@ -93,18 +66,18 @@ class MainView extends Component {
   }
 
   loadConfigFile() {
-    if (config.get('currentSavedPlaylist') != undefined) {
+    if (!config.checkIfUndefined('currentSavedPlaylist')) {
       goToFolder(config.get('currentSavedPlaylist'));
     }
-    if (config.get('currentSavedSong') != undefined) {
+    if (!config.checkIfUndefined('currentSavedSong')) {
       currentSong = config.get('currentSavedSong');
       currentSong.changeCurrentSong = changeCurrentSong;
-      loadSavedSong();
+      playMusicItem(currentSong.path, currentSong.artwork, currentSong.index, currentSong.songData, false);
     }
-    if (config.get('currentAppTheme') != undefined) {
+    if (!config.checkIfUndefined('currentAppTheme')) {
       document.getElementById('app').className = config.get('currentAppTheme');
     }
-    //console.log("config.store: " + config.store);
+    //console.log(config.store());
   }
 
   async componentDidMount() {
@@ -126,18 +99,14 @@ class MainView extends Component {
   }
   
   backButton(currentSongIndex) {
-    if (audio.getAudioSrc() != "") {
-      if (currentSongIndex > 0) {
-        playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1, songsMetadata[currentSongIndex-1]);
-      }
+    if (audio.getAudioSrc() != "" && currentSongIndex > 0) {
+      playMusicItem(musicList[currentSongIndex-1], currentSong.artwork, currentSongIndex-1, songsMetadata[currentSongIndex-1], true);
     }
   }
 
   forwardButton(currentSongIndex) {
-    if (audio.getAudioSrc() != "") {
-      if (currentSongIndex < musicList.length-1) {
-        playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1, songsMetadata[currentSongIndex+1]);
-      }
+    if (audio.getAudioSrc() != "" && currentSongIndex < musicList.length-1) {
+      playMusicItem(musicList[currentSongIndex+1], currentSong.artwork, currentSongIndex+1, songsMetadata[currentSongIndex+1], true);
     }
   }
 
@@ -176,27 +145,38 @@ class MainView extends Component {
     } else {
       audio.setAudioVolume(0);
     }
-    document.getElementById("volumeFill").style.width = audio.getAudioVolume() * 100 + "%";
+    documentFunctions.setElementsWidth('volumeFill', (audio.getAudioVolume() * 100) + "%");
     this.setState({ isMuted: !this.state.isMuted });
   }
 
   volumeFillChange(vol) {
-    document.getElementById("volumeFill").style.width = vol * 100 + "%";
+    documentFunctions.setElementsWidth('volumeFill', vol * 100 + "%");
     lastSavedVolume = vol;
   }
 
   timeFillChange(time) {
-    document.getElementById("timeFill").style.width = time + "%";
+    documentFunctions.setElementsWidth('timeFill', time + "%");
+  }
+
+  toggleBottomMenu() {
+    if (!toggledBottomView) {
+      documentFunctions.setElementsHeight('info', '100%');
+      documentFunctions.setElementsHeight('draggableArea', '0');
+      ReactDOM.render(<FontAwesomeIcon icon={faAngleDoubleDown} className="icon scrollIcon" />, document.getElementsByClassName('bottomMenu')[0]);
+    } else {
+      documentFunctions.setElementsHeight('info', '30%');
+      documentFunctions.setElementsHeight('draggableArea', '70%');
+      ReactDOM.render(<FontAwesomeIcon icon={faAngleDoubleUp} className="icon scrollIcon" />, document.getElementsByClassName('bottomMenu')[0]);
+    }
+    toggledBottomView = !toggledBottomView;
   }
 
   render() {
     return (
       <div id="mainView" className="mainView">
-        <div className="album" id="albumArtwork">
-          <div id="draggableArea" className="draggableArea" />
-        </div>
+        <div className="album" id="albumArtwork" />
+        <div id="draggableArea" className="draggableArea" />
         <div id="info" className="info">
-          <div className="grabBar" />
           <div className="progress-bar">
             <div className="time--current" id="currentSongTime">--:--</div>
             <div className="time--total" id="currentSongDuration">--:--</div>
@@ -210,6 +190,7 @@ class MainView extends Component {
             <h3 className="album-name" />
           </div>
           <div className="controls">
+            <div className="bottomMenu" onClick={() => this.toggleBottomMenu()}><FontAwesomeIcon icon={faAngleDoubleUp} className="icon"/></div>
             <div className="previous" onClick={() => this.backButton(currentSong.index)}><FontAwesomeIcon icon={faBackward} className="icon" /></div>
             <div className="play" onClick={() => this.playButton()}><FontAwesomeIcon icon={faPlay} className="icon" /></div>
             <div className="next" onClick={() => this.forwardButton(currentSong.index)}><FontAwesomeIcon icon={faForward} className="icon" /></div>

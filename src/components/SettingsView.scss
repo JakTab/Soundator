@@ -10,4 +10,26 @@
     margin-top: 5px;
     margin-right: 5px;
     margin-bottom: 5px;
+    font-family: var(--font);
+}
+
+/* Settings content */
+.settingsView div {
+    margin: 2% 5%;
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+}
+
+.settingContainer {
+    width: 100%;
+}
+
+.settingContainer p {
+    width: 30%;
+}
+
+.settingContainer select, .settingContainer button {
+    width: 70%;
+    font-family: var(--font);
 }

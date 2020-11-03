@@ -6,30 +6,33 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 5px;
   box-shadow: 5px 5px 15px var(--shadow-box-color);
   transition: flex 1000ms ease;
 }
 
+/* Album image */
 .album {
   background: var(--background-album);
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
   height: 100%;
-  border-radius: 5px;
   position: absolute;
 }
 
+/* Draggable area */
 .draggableArea { 
   width: 100%;
   height: 70%;
+  min-height: 0;
   max-height: 70%;
   -webkit-app-region: drag;
 }
 
+/* Info space */
 .info {
   z-index: 1;
+  align-items: center;
   height: 30%;
   width: 100%;
   position: absolute;
@@ -39,13 +42,7 @@
   box-sizing: border-box;
 }
 
-.grabBar {
-  background-color: var(--secondary-color);
-  width: 100%;
-  height: 0.6rem;
-  border-radius: 2px;
-}
-
+/* Music progress bar */
 .progress-bar {
   height: 5px;
   width: 73%;
@@ -70,7 +67,7 @@
   right: 30px;
 }
 
-#divTimeFill, #infoToggle {
+#divTimeFill {
   height: 0.6rem;
   background-color: var(--light-color);
 }
@@ -82,6 +79,7 @@
   border-radius: 2px;
 }
 
+/* Currently playing */
 .currently-playing, .song-number-row {
   text-align: center;
   margin-top: -3px;
@@ -114,6 +112,7 @@
   margin-top: 2px;
 }
 
+/* App controls */
 .controls {
   display: flex;
   align-items: center;
@@ -126,11 +125,14 @@
   .volume {
     right: 150px;
     position: absolute;
-    font-size: .8em;
+  }
+  .bottomMenu {
+    left: 100px;
+    position: absolute;
   }
 }
 
-.play, .next, .previous, .option, .volume {
+.play, .next, .previous, .option, .volume, .bottomMenu {
   transition: all .5s ease;
   &:hover {
     color: var(--dark-color);
@@ -143,10 +145,6 @@
   right: 30px;
   position: absolute;
   background-color: var(--light-color);
-}
-
-.icon {
-  font-size: 25px;
 }
 
 .bottomRow {

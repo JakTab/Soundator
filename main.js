@@ -18,8 +18,8 @@ function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		width: 800,
 		height: 800,
-		maxWidth: 900,
-		maxHeight: 900,
+		maxWidth: 800,
+		maxHeight: 800,
 		minWidth: 400,
 		minHeight: 400,
 		maximizable: false,
@@ -53,7 +53,6 @@ function createMainWindow() {
 		mainWindow.removeMenu(false);
 	}
 
-	mainWindow.removeMenu(false);
 	mainWindow.loadURL(indexPath);
 
 	//Maintaining aspect ratio when resizing window
@@ -94,9 +93,7 @@ function createMainWindow() {
 	mainWindow.on('closed', () => (mainWindow = null))
 }
 
-app.on('ready', () => {
-	createMainWindow();
-
+function generateContextMenu() {
 	const ctxMenu = new Menu();
 	ctxMenu.append(new MenuItem({ role: 'minimize' }));
 	ctxMenu.append(new MenuItem({ role: 'close' }));
@@ -104,7 +101,16 @@ app.on('ready', () => {
 	mainWindow.webContents.on('context-menu', (e, params) => {
 		ctxMenu.popup(mainWindow, params.x, params.y);
 	});
+}
+
+app.on('ready', () => {
+	createMainWindow();
+	generateContextMenu();
 });
+
+app.on('before-quit', () => {
+	clearInterval(aspectRatioInterval);
+})
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
@@ -115,7 +121,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
 	if (mainWindow === null) {
-		createMainWindow()
+		createMainWindow();
 	}
 })
 
