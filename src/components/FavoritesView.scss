@@ -1,0 +1,33 @@
+.favoritesView {
+    width: 100%;
+    height: 90%;
+    background-color: var(--white-color);
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    position: absolute;
+    top: 10%;
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    font-family: var(--font);
+}
+
+/* Settings content */
+.favoritesView div {
+    margin: 2% 5%;
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+}
+
+.favoritesContainer {
+    width: 100%;
+    border-radius: 5px;
+    border: 5px solid var(--primary-color);
+}
+
+.favoritesContainer a {
+    width: 40%;
+    font-family: var(--font);
+}

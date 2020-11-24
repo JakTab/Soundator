@@ -4,7 +4,7 @@ let notPermitted = ["System Volume Information", "$RECYCLE.BIN"]
 export function isStringMusicFile(fileExtension) {
     var isTrue = false;
     acceptableMusicFormats.forEach((format) => {
-        if (fileExtension == format) 
+        if (fileExtension == format)
             isTrue = true;
     });
     return isTrue;

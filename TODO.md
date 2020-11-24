@@ -68,13 +68,13 @@
 
 - [x] Code refactor/cleanup #3
 
+- [x] Creating/opening/removing favorites
+
 ===
 
 - [ ] Saving window size upon exiting
 
 - [ ] Item list ordering by disk number (multiple disk albums)
-
-- [ ] Creating/opening/removing playlists
 
 - [ ] Folder navigation one level deeper
 
@@ -82,4 +82,10 @@
 
 - [ ] Styles on resize screen
 
-- [ ] Adding settings to settings view (clean saved data; change theme)
+- [ ] Adding settings to settings view (clean saved data + restart app; change theme)
+
+- [ ] Breaking pages to independent components
+
+- [ ] AlbumArt lib - action on reject and no album art found
+
+- [ ] Refreshing favorites list

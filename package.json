@@ -29,6 +29,7 @@
     "musicmetadata": "^2.0.5",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
+    "react-tiny-toast": "^1.0.2",
     "react-tooltip": "^4.2.10"
   },
   "devDependencies": {

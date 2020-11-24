@@ -38,8 +38,8 @@ class SettingsView extends Component {
                     <div className="settingContainer">
                         <p>Application theme: </p>
                         <select onChange={(e) => toggleAppTheme(e)}>
-                            {themes.map(team => (
-                                <option style={{backgroundColor: team.color}} key={team.value} value={team.value}>{team.name}</option>
+                            {themes.map(theme => (
+                                <option style={{backgroundColor: theme.color}} key={theme.value} value={theme.value}>{theme.name}</option>
                             ))}
                         </select>
                     </div>

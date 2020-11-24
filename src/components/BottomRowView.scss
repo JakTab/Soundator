@@ -119,3 +119,15 @@
     margin: 10px;
     font-family: var(--font);
 }
+
+.favoritesStar {
+    margin: 10px 10px 10px 475px;
+    width: 5%;
+}
+
+.favoriteStarToast {
+    opacity: 0.5;
+    z-index: 2 !important;
+    font-family: var(--font);
+    border-radius: 5px;
+}

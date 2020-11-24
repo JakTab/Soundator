@@ -1,5 +1,6 @@
 /* Imports */
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import fs from 'fs';
 import mm from 'musicmetadata';
 import * as byte64 from 'byte-base64';
@@ -7,13 +8,16 @@ import ReactTooltip from 'react-tooltip';
 
 import * as albumArt from 'album-art';
 
+import { ToastContainer, toast } from 'react-tiny-toast';
+
 import './BottomRowView.scss';
 
 import { playMusicItem } from './MainView';
+import FavoritesView, { favorites } from './FavoritesView';
 import SettingsView from './SettingsView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import * as filterFunctions from '../utils/filterFunctions';
 import * as calcFunctions from '../utils/calcFunctions';
@@ -44,13 +48,8 @@ export async function goToFolder(mainFolder) {
     await getItemsToMusicList(mainFolder);
      
  	musicList.forEach((musicListItem, index) => {
-        if (filterFunctions.isStringMusicFile(musicListItem.split('.').pop())) {
-            //Song
-            addToPlaylistAsSong(musicListItem);
-        } else {
-            //Folder
-            createListItem(false, false, musicListItem, index);
-        }
+        //If - Song; Else - Folder
+        (filterFunctions.isStringMusicFile(musicListItem.split('.').pop())) ? addToPlaylistAsSong(musicListItem) : createListItem(false, false, musicListItem, index);
     });
 
     config.set('currentSavedPlaylist', mainFolder);
@@ -62,18 +61,14 @@ async function getItemsToMusicList(folder) {
     }
 
     fs.readdirSync(folder).forEach((folderItem) => {
-        if (folder.endsWith("\\")) {
-            folderItem = folder + folderItem;
-        } else {
-            folderItem = folder + "\\" + folderItem;
-        }
+        folderItem = (folder.endsWith("\\")) ? folder + folderItem : folder + "\\" + folderItem;
 
         if (!filterFunctions.folderNotPermitted(folderItem)) {
             if (fs.statSync(folderItem).isDirectory() || filterFunctions.isStringMusicFile(folderItem.split('.').pop())) {
                 musicList.push(folderItem);
             }
         }
-    });	
+    });
 }
 
 async function addToPlaylistAsSong(path) {
@@ -90,7 +85,6 @@ function Uint8ArrayToJpgURL(arrayData) {
     return "data:image/png;base64," + byte64.bytesToBase64(arrayData);
 }
 
-//TODO: action on reject and no album art found
 function getAlbumCoverOnline(artistName, albumName) {
     var promise = new Promise(function(resolve, reject) {
         resolve(albumArt(artistName, {album: albumName, size: 'medium'}));
@@ -100,7 +94,8 @@ function getAlbumCoverOnline(artistName, albumName) {
 
 async function createListItem(songData, path, musicFolderPath, index) {
     let imageUrl = "", artistSong = "", artistName = "", 
-        artistAlbum = "", trackLength = "", order = "", title = "", cutStr = "";
+        artistAlbum = "", trackLength = "", order = "", title = "", cutStr = "",
+        favoritesElement = "";
 
     let isFolder = songData != false ? false : true;
 
@@ -163,15 +158,9 @@ async function createListItem(songData, path, musicFolderPath, index) {
         albumSong = documentFunctions.generateElement('h2', '', 'listItem-song-name');
         documentFunctions.setInnerHTMLToObject(albumSong, artistSong);
         listItemInfo.appendChild(albumSong);
-    } 
-
-    if (isFolder) {
-        //Folder
-        albumArtist = documentFunctions.generateElement('h2', '', 'listItem-folder-name');
-    } else {
-        //Song
-        albumArtist = documentFunctions.generateElement('h3', '', 'listItem-artist-name');
     }
+
+    albumArtist = isFolder ? documentFunctions.generateElement('h2', '', 'listItem-folder-name') : documentFunctions.generateElement('h3', '', 'listItem-artist-name');
     documentFunctions.setInnerHTMLToObject(albumArtist, artistName);
     listItemInfo.appendChild(albumArtist);
 
@@ -183,10 +172,40 @@ async function createListItem(songData, path, musicFolderPath, index) {
     documentFunctions.setInnerHTMLToObject(albumSongLength, trackLength);
     listItemInfo.appendChild(albumSongLength);
 
-	musicAlbumItem.appendChild(albumCoverItem);
-    musicAlbumItem.appendChild(listItemInfo);
+    if (isFolder) {
+        favoritesElement = documentFunctions.generateElement('div', '', 'favoritesStar');
+        ReactDOM.render(<FontAwesomeIcon icon={faStar} style={{ color: 'grey' }} className="icon" />, favoritesElement);
+        
+        favoritesElement.onclick = async () => {
+            if (config.checkIfUndefined('favoritesList')) {
+                config.set('favoritesList', []);
+            }
+
+            var favoriteItem = {
+                'value': musicFolderPath,
+                'title': title
+            }
+
+            var favoritesList = config.get('favoritesList');
+            var index = favoritesList.map(function(favorite) { return favorite.value; }).indexOf(favoriteItem.value);
+
+            if (index > -1) {
+                favoritesList.splice(index, 1);
+                config.set('favoritesList', favoritesList);
+                await toast.show('Favorite removed', { timeout: 2000, pause: false, variant: 'default', delay: 0, position: 'top-center', uniqueCode: 'removeFromFavorites', className: 'favoriteStarToast' })
+                document.getElementsByClassName('toast-container')[0].style.zIndex = "2";
+            } else {
+                config.set('favoritesList', [...favoritesList, favoriteItem]);
+                await toast.show('Favorite added', { timeout: 2000, pause: false, variant: 'default', delay: 0, position: 'top-center', uniqueCode: 'addToFavorites', className: 'favoriteStarToast' })
+                document.getElementsByClassName('toast-container')[0].style.zIndex = "2";
+            }
+        }
+    }
     
-	document.getElementById("list").appendChild(musicAlbumItem);
+    musicAlbumItem.appendChild(albumCoverItem);
+    musicAlbumItem.appendChild(listItemInfo);
+    if(isFolder) musicAlbumItem.appendChild(favoritesElement);
+    document.getElementById("list").appendChild(musicAlbumItem);
 }
 
 function backFolder() {
@@ -213,11 +232,7 @@ function getDraggedFileData(event) {
     const draggedFilesObj = event.dataTransfer.files;
     if (event.dataTransfer.files.length == 1) {
         for (const [key, value] of Object.entries(draggedFilesObj)) {
-            if (value.type == "") {
-                goToFolder(value.path);
-            } else {
-                addToPlaylistAsSong(value.path);
-            }
+            value.type == "" ? goToFolder(value.path) : addToPlaylistAsSong(value.path);
         }
     }
 }
@@ -235,14 +250,22 @@ function onDragLeaveList(event) {
     event.preventDefault(); 
 }
 
-function toggleSearch(clickedButton) {
-    if (clickedButton || (!clickedButton && !documentFunctions.includesClass('searchField', 'hide'))) {
+function toggleSearch(isButtonClicked) {
+    if (isButtonClicked || (!isButtonClicked && !documentFunctions.includesClass('searchField', 'hide'))) {
         documentFunctions.toggleClass('searchField', 'hide');
     }
 }
 
 function toggleSettings() {
-    documentFunctions.toggleClass('settingsView', 'hide');
+    if (documentFunctions.includesClass('favoritesView', 'hide')) {
+        documentFunctions.toggleClass('settingsView', 'hide');
+    }
+}
+
+function toggleFavorites() {
+    if (documentFunctions.includesClass('settingsView', 'hide')) {
+        documentFunctions.toggleClass('favoritesView', 'hide');
+    }
 }
 
 function searchThroughPlaylist(e) {
@@ -251,13 +274,7 @@ function searchThroughPlaylist(e) {
     musicList.forEach((musicItem, index) => {
         var splitMusicItem = musicItem.split('\\');
         if(splitMusicItem[splitMusicItem.length-1].toLowerCase().includes(searchedValue)) {
-            if (typeof songsMetadata[index] == 'undefined') {
-                //Folder
-                createListItem(false, false, musicItem, index);
-            } else {
-                //Song
-                addToPlaylistAsSong(musicItem);
-            }
+            (typeof songsMetadata[index] == 'undefined') ? createListItem(false, false, musicItem, index) : addToPlaylistAsSong(musicItem);
         }
     })
 }
@@ -277,6 +294,7 @@ class BottomRowView extends Component {
         return (
             <div id="bottomRowView" className="bottomRowView">
                 <ReactTooltip />
+                <ToastContainer />
                 <div id="bottomOptionsBar">
                     <div id="folderControlBar">
                         <div onClick={() => toggleSearch(true)}><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
@@ -284,6 +302,7 @@ class BottomRowView extends Component {
                         <div onClick={() => getFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
                         <div onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" data-tip="Forward" /></div>
                         <div onClick={() => toggleSettings()}><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
+                        <div onClick={() => toggleFavorites()}><FontAwesomeIcon icon={faStar} className="icon menuIcon" data-tip="Favorites" /></div>
                     </div>
                 </div>
                 <div id="searchField" className="searchField">
@@ -291,6 +310,7 @@ class BottomRowView extends Component {
                 </div>
                 <div id="list" onDrop={(e) => getDraggedFileData(e)} onDragOver={(e) => onDragOverList(e)} onDragEnter={(e) => onDragEnterList(e)} onDragLeave={(e) => onDragLeaveList(e)} />
                 <SettingsView />
+                <FavoritesView />
             </div>
         )
     }
