@@ -8,8 +8,6 @@ import ReactTooltip from 'react-tooltip';
 
 import * as albumArt from 'album-art';
 
-import { ToastContainer, toast } from 'react-tiny-toast';
-
 import './BottomRowView.scss';
 
 import { playMusicItem } from './MainView';
@@ -192,12 +190,8 @@ async function createListItem(songData, path, musicFolderPath, index) {
             if (index > -1) {
                 favoritesList.splice(index, 1);
                 config.set('favoritesList', favoritesList);
-                await toast.show('Favorite removed', { timeout: 2000, pause: false, variant: 'default', delay: 0, position: 'top-center', uniqueCode: 'removeFromFavorites', className: 'favoriteStarToast' })
-                document.getElementsByClassName('toast-container')[0].style.zIndex = "2";
             } else {
                 config.set('favoritesList', [...favoritesList, favoriteItem]);
-                await toast.show('Favorite added', { timeout: 2000, pause: false, variant: 'default', delay: 0, position: 'top-center', uniqueCode: 'addToFavorites', className: 'favoriteStarToast' })
-                document.getElementsByClassName('toast-container')[0].style.zIndex = "2";
             }
         }
     }
@@ -294,7 +288,6 @@ class BottomRowView extends Component {
         return (
             <div id="bottomRowView" className="bottomRowView">
                 <ReactTooltip />
-                <ToastContainer />
                 <div id="bottomOptionsBar">
                     <div id="folderControlBar">
                         <div onClick={() => toggleSearch(true)}><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
