@@ -15,7 +15,7 @@ import FavoritesView, { favorites } from './FavoritesView';
 import SettingsView from './SettingsView';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCog, faFolder, faSearch, faStar, faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 import * as filterFunctions from '../utils/filterFunctions';
 import * as calcFunctions from '../utils/calcFunctions';
@@ -29,6 +29,8 @@ export var songsMetadata = [];
 const dialog = require('electron').remote.dialog;
 const config = new configController();
 
+var currentMainFolder = "";
+
 /* Functions */
 async function getFolders() {
     let mainFolder = await dialog.showOpenDialog({ properties: ["openDirectory"] });
@@ -41,6 +43,7 @@ export async function goToFolder(mainFolder) {
     cleanSearchFieldInput();
     musicList = [];
     songsMetadata = [];
+    currentMainFolder = mainFolder;
 
     documentFunctions.setInnerHTML('id', 'list', '');
     await getItemsToMusicList(mainFolder);
@@ -92,8 +95,7 @@ function getAlbumCoverOnline(artistName, albumName) {
 
 async function createListItem(songData, path, musicFolderPath, index) {
     let imageUrl = "", artistSong = "", artistName = "", 
-        artistAlbum = "", trackLength = "", order = "", title = "", cutStr = "",
-        favoritesElement = "";
+        artistAlbum = "", trackLength = "", order = "", title = "", cutStr = "";
 
     let isFolder = songData != false ? false : true;
 
@@ -169,36 +171,9 @@ async function createListItem(songData, path, musicFolderPath, index) {
     var albumSongLength = documentFunctions.generateElement('h3', '', 'listItem-song-length');
     documentFunctions.setInnerHTMLToObject(albumSongLength, trackLength);
     listItemInfo.appendChild(albumSongLength);
-
-    if (isFolder) {
-        favoritesElement = documentFunctions.generateElement('div', '', 'favoritesStar');
-        ReactDOM.render(<FontAwesomeIcon icon={faStar} style={{ color: 'grey' }} className="icon" />, favoritesElement);
-        
-        favoritesElement.onclick = async () => {
-            if (config.checkIfUndefined('favoritesList')) {
-                config.set('favoritesList', []);
-            }
-
-            var favoriteItem = {
-                'value': musicFolderPath,
-                'title': title
-            }
-
-            var favoritesList = config.get('favoritesList');
-            var index = favoritesList.map(function(favorite) { return favorite.value; }).indexOf(favoriteItem.value);
-
-            if (index > -1) {
-                favoritesList.splice(index, 1);
-                config.set('favoritesList', favoritesList);
-            } else {
-                config.set('favoritesList', [...favoritesList, favoriteItem]);
-            }
-        }
-    }
     
     musicAlbumItem.appendChild(albumCoverItem);
     musicAlbumItem.appendChild(listItemInfo);
-    if(isFolder) musicAlbumItem.appendChild(favoritesElement);
     document.getElementById("list").appendChild(musicAlbumItem);
 }
 
@@ -278,6 +253,40 @@ function cleanSearchFieldInput() {
     toggleSearch(false);
 }
 
+function addToFavorites() {
+    let musicFolderPath = "", title = "";
+
+    if (config.checkIfUndefined('favoritesList')) {
+        config.set('favoritesList', []);
+    }
+
+    if (typeof currentMainFolder == "object") {
+        musicFolderPath = currentMainFolder.filePaths[0];
+    } else if (typeof currentMainFolder == "string") {
+        musicFolderPath = currentMainFolder;
+    }
+
+    var splitMusicItem = musicFolderPath.split('\\');
+    title = splitMusicItem[splitMusicItem.length-1];
+
+    console.log([musicFolderPath, title]);
+
+    var favoriteItem = {
+        'value': musicFolderPath,
+        'title': title
+    }
+
+    var favoritesList = config.get('favoritesList');
+    var index = favoritesList.map(function(favorite) { return favorite.value; }).indexOf(favoriteItem.value);
+
+    if (index > -1) {
+        favoritesList.splice(index, 1);
+        config.set('favoritesList', favoritesList);
+    } else {
+        config.set('favoritesList', [...favoritesList, favoriteItem]);
+    }
+}
+
 /* Component class */
 class BottomRowView extends Component {
     constructor(props) {
@@ -293,8 +302,8 @@ class BottomRowView extends Component {
                         <div onClick={() => toggleSearch(true)}><FontAwesomeIcon icon={faSearch} className="icon menuIcon" data-tip="Search in playlist" /></div>
                         <div onClick={() => backFolder()}><FontAwesomeIcon icon={faArrowLeft} className="icon menuIcon" data-tip="Back" /></div>
                         <div onClick={() => getFolders()}><FontAwesomeIcon icon={faFolder} className="icon menuIcon" data-tip="Load folder to playlist" /></div>
-                        <div onClick={() => forwardFolder()}><FontAwesomeIcon icon={faArrowRight} className="icon menuIcon" data-tip="Forward" /></div>
                         <div onClick={() => toggleSettings()}><FontAwesomeIcon icon={faCog} className="icon menuIcon" data-tip="Settings" /></div>
+                        <div onClick={() => addToFavorites()}><FontAwesomeIcon icon={faThumbtack} className="icon menuIcon" data-tip="Add Current Folder to Favorites" /></div>
                         <div onClick={() => toggleFavorites()}><FontAwesomeIcon icon={faStar} className="icon menuIcon" data-tip="Favorites" /></div>
                     </div>
                 </div>

@@ -76,8 +76,6 @@
 
 - [ ] Item list ordering by disk number (multiple disk albums)
 
-- [ ] Folder navigation one level deeper
-
 - [ ] Create themes
 
 - [ ] Styles on resize screen

@@ -22,11 +22,8 @@ class FavoritesView extends Component {
 
     async componentDidMount() {
         if (!config.checkIfUndefined('favoritesList')) {
-            this.setState({
-                favorites: config.get('favoritesList')
-            });
+            this.setState({ favorites: config.get('favoritesList') });
         }
-        console.log(favorites);
     }
 
     jumpToFolder(index) {
