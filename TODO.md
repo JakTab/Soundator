@@ -70,6 +70,8 @@
 
 - [x] Creating/opening/removing favorites
 
+- [x] Adding settings to settings view (clean saved data + restart app; change theme)
+
 ===
 
 - [ ] Saving window size upon exiting
@@ -79,8 +81,6 @@
 - [ ] Create themes
 
 - [ ] Styles on resize screen
-
-- [ ] Adding settings to settings view (clean saved data + restart app; change theme)
 
 - [ ] Breaking pages to independent components
 
