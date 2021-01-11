@@ -72,11 +72,11 @@
 
 - [x] Adding settings to settings view (clean saved data + restart app; change theme)
 
+- [x] Item list ordering by disk number (multiple disk albums)
+
 ===
 
 - [ ] Saving window size upon exiting
-
-- [ ] Item list ordering by disk number (multiple disk albums)
 
 - [ ] Create themes
 

@@ -36,7 +36,7 @@ function changeCurrentSong(index, title, artist, album, artwork, path, songData)
 export function playMusicItem(path, imageUrl, index, songData, playbackOn) {
   audio.stopMusic();
   audio.setAudioSrc(path);
-  audio.setOnEnded(index);
+  audio.setOnEnded(index-1);
 
   documentFunctions.setElementsWidth('volumeFill', (audio.getAudioVolume() * 100) + "%");
   lastSavedVolume = audio.getAudioVolume();

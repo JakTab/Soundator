@@ -50,7 +50,7 @@ export async function goToFolder(mainFolder) {
      
  	musicList.forEach((musicListItem, index) => {
         //If - Song; Else - Folder
-        (filterFunctions.isStringMusicFile(musicListItem.split('.').pop())) ? addToPlaylistAsSong(musicListItem) : createListItem(false, false, musicListItem, index);
+        (filterFunctions.isStringMusicFile(musicListItem.split('.').pop())) ? addToPlaylistAsSong(musicListItem) : createListItem(false, false, false, musicListItem, index);
     });
 
     config.set('currentSavedPlaylist', mainFolder);
@@ -72,12 +72,12 @@ async function getItemsToMusicList(folder) {
     });
 }
 
-async function addToPlaylistAsSong(path) {
+function addToPlaylistAsSong(path) {
 	var readableStream = fs.createReadStream(path);
-	await mm(readableStream, { duration: true }, async function (err, metadata) {
+    mm(readableStream, { duration: true }, function (err, metadata) {
         if (err) throw err;
-        songsMetadata[metadata.track.no-1] = metadata;
-        createListItem(metadata, path, false, false);
+        songsMetadata.push(metadata);
+        createListItem(metadata, path, songsMetadata.length, false, false);
 		readableStream.close();
     });
 }
@@ -93,7 +93,7 @@ function getAlbumCoverOnline(artistName, albumName) {
     return promise;
 }
 
-async function createListItem(songData, path, musicFolderPath, index) {
+async function createListItem(songData, path, orderIndex, musicFolderPath, index) {
     let imageUrl = "", artistSong = "", artistName = "", 
         artistAlbum = "", trackLength = "", order = "", title = "", cutStr = "";
 
@@ -115,7 +115,7 @@ async function createListItem(songData, path, musicFolderPath, index) {
         if (!Number.isNaN(songData.duration)) {
             trackLength = calcFunctions.calcTime(songData.duration);
         }
-        order = songData.track.no-1;
+        order = orderIndex;
         musicAlbumItem.onclick = () => {
             playMusicItem(path, imageUrl, order, songData, true);
         }
@@ -243,7 +243,7 @@ function searchThroughPlaylist(e) {
     musicList.forEach((musicItem, index) => {
         var splitMusicItem = musicItem.split('\\');
         if(splitMusicItem[splitMusicItem.length-1].toLowerCase().includes(searchedValue)) {
-            (typeof songsMetadata[index] == 'undefined') ? createListItem(false, false, musicItem, index) : addToPlaylistAsSong(musicItem);
+            (typeof songsMetadata[index] == 'undefined') ? createListItem(false, false, false, musicItem, index) : addToPlaylistAsSong(musicItem);
         }
     })
 }
