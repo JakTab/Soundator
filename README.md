@@ -26,7 +26,10 @@ Once all the dependencies have finished downloading, run ```npm run start``` to 
     <li>Reads ID3 tags and displays the songs data and album art (if it exists) or downloads one from the Spotify API</li>
     <li>Quickly switch tracks from the playlist or by navigation buttons</li>
     <li>Use build-in folder viewer to find and navigate through the folder tree if needed</li>
+    <li>Search functionality within the scope of the currently active folder</li>
+    <li>Ability to add/remove folders to the Favorites so you can access them more easily</li>
     <li>You don't need to save anything - the last viewed folder and the last played song will be back there when you need it again</li>
+    <li>Settings with option to change your application theme - allowing you to choose one which fits you best</li>
 </ul>
 
 # Screenshots
@@ -34,9 +37,6 @@ Coming soon!
 
 # Features to come soon!
 <ul>
-    <li>Search functionality within the scope of the currently active playlist</li>
-    <li>Theming - allowing you to choose one which fits you best</li>
-    <li>Settings options</li>
     <li>Linux and MacOS versions</li>
     <li>...and maybe more?</li>
 </ul>
